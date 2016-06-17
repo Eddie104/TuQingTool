@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="onCreationCompleteHandler(event)" xmlns:project="com.apowo.tuqing.view.project.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.events.FurnitureEvent;
+			import com.apowo.tuqing.events.MapEvent;
+			import com.apowo.tuqing.events.ProjectEvent;
+			import com.apowo.tuqing.model.MapDataManager;
+			import com.apowo.tuqing.model.ProjectManager;
+			import com.apowo.tuqing.model.data.MapData;
+			import com.apowo.tuqing.model.data.ProjectData;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.FileSystemEnumerationMode;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			protected function onCreationCompleteHandler(event:FlexEvent):void
+			{
+				
+				createMapListContentMenu();
+			}
+			
+			private function createMapListContentMenu():void{
+//				var contextMenu:ContextMenu = new ContextMenu();
+//				// 新建按钮
+//				var newFileMenuItem:NativeMenuItem = new NativeMenuItem("新建");
+//				newFileMenuItem.addEventListener(Event.SELECT, onNewFile);
+//				contextMenu.addItem(newFileMenuItem);
+//				
+//				// 打开按钮
+//				var openMenuItem:NativeMenuItem = new NativeMenuItem("打开");
+//				openMenuItem.addEventListener(Event.SELECT, onOpenFile);
+//				contextMenu.addItem(openMenuItem);
+//				
+//				// 编辑按钮
+//				var editMenuItem:NativeMenuItem = new NativeMenuItem("编辑");
+//				editMenuItem.addEventListener(Event.SELECT, onEditFile);
+//				contextMenu.addItem(editMenuItem);
+//				
+//				// 分割线
+//				contextMenu.addItem(new NativeMenuItem(null, true));
+//				
+//				// 删除按钮
+//				var deleteMenuItem:NativeMenuItem = new NativeMenuItem("删除");
+//				deleteMenuItem.addEventListener(Event.SELECT, onDeleteFile);
+//				contextMenu.addItem(deleteMenuItem);
+//				
+//				_mapList.contextMenu = contextMenu;
+				
+				
+				_projectTree.addEventListener(ProjectEvent.PROJECT_EVENT, onProjectEvent);
+				_furniList.addEventListener(FurnitureEvent.FURNITURE_EVENT, onFurnitureEvent);
+			}
+			
+			private function onProjectEvent(evt:ProjectEvent):void{
+				this.dispatchEvent(new ProjectEvent(evt.subType, evt.data));
+			}
+			
+			private function onFurnitureEvent(evt:FurnitureEvent):void{
+				this.dispatchEvent(new FurnitureEvent(evt.subType, evt.data));
+			}
+			
+			private function onNewFile(evt:Event):void{
+				this.dispatchEvent(new MapEvent(MapEvent.NEW_FILE));
+			}
+			
+			private function onOpenFile(evt:Event):void{
+				this.dispatchEvent(new MapEvent(MapEvent.OPEN_FILE));
+			}
+			
+			private function onEditFile(evt:Event):void{
+				//this.dispatchEvent(new MapEvent(MapEvent.EDIT_FILE, _mapList.selectedItem as MapData));
+			}
+			
+			private function onDeleteFile(evt:Event):void{
+				//this.dispatchEvent(new MapEvent(MapEvent.DELETE_FILE, _mapList.selectedItem as MapData));
+			}
+			
+			protected function onMapDataChangeHandler(event:IndexChangeEvent):void
+			{
+//				var mapData:MapData = _mapList.selectedItem as MapData;
+//				if(mapData){
+//					this.dispatchEvent(new MapEvent(MapEvent.MAP_CHANGED, mapData));
+//				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<mx:VDividedBox width="100%" height="100%">
+		<mx:TabNavigator width="100%" height="100%">
+			<s:NavigatorContent width="100%" height="100%" label="项目列表">
+				<project:ProjectTree id="_projectTree" width="100%" height="100%"/>
+				<!--<mx:FileSystemTree id="_projectTree" width="100%" height="100%" horizontalScrollPolicy="off"/>-->
+				<!-- 
+				<s:List id="_mapList" width="100%" height="100%"
+						change="onMapDataChangeHandler(event)"
+						dataProvider="{MapDataManager.instance.mapDataList}"/>
+				-->
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+		<mx:TabNavigator width="100%" height="100%">
+			<s:NavigatorContent width="100%" height="100%" label="家具列表">
+				<project:FurnitureList id="_furniList" width="100%" height="100%"/>
+			</s:NavigatorContent>
+			<s:NavigatorContent width="100%" height="100%" label="选项卡 1">
+			</s:NavigatorContent>
+			<s:NavigatorContent width="100%" height="100%" label="选项卡 1">
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+	</mx:VDividedBox>
+	<s:Rect width="100%" height="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="0" weight="1"/>
+		</s:stroke>
+	</s:Rect>
+</s:Group>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="300" height="200"
+			   close="onCloseHandler(event)" title="新建项目">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.model.ProjectManager;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			
+			import org.libra.flex.utils.PopUpUtil;
+			import org.libra.utils.text.StringUtil;
+			
+			protected function onCloseHandler(event:CloseEvent = null):void
+			{
+				PopUpUtil.instance.removePopUp(this, 1);
+			}
+			
+			protected function onCancel(event:MouseEvent):void
+			{
+				onCloseHandler();
+			}
+			
+			protected function onCreate(event:MouseEvent):void
+			{
+				var name:String = _projectName.text;
+				if(name != ""){
+					var cellWidth:int = int(_cellWidth.text);
+					if(cellWidth % 4 == 0){
+						var path:String = _projectPath.text;
+						if(path == ""){
+							Alert.show("请选择项目路径", "ERROR");
+						} else {
+							ProjectManager.instance.createNewProject(name, path + File.separator + name, cellWidth);
+							onCloseHandler();	
+						}
+					}else{
+						Alert.show("格子宽度必须是4的倍数", "ERROR");	
+					}
+				}else{
+					Alert.show("请输入地图名", "ERROR");
+				}
+			}
+			
+			protected function onBrowse(event:MouseEvent):void
+			{
+				var file:File = new File();  
+				file.browseForDirectory("选择项目路径");
+				file.addEventListener(Event.SELECT, onBrowseHandler);
+			}
+			
+			private function onBrowseHandler(evt:Event):void{
+				var f:File = evt.target as File;
+				f.removeEventListener(Event.SELECT, onBrowseHandler);
+				_projectPath.text = f.nativePath;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<mx:StringValidator  source="{_projectName}" property="text"
+							 trigger="{_projectName}" triggerEvent="focusOut" />
+		<mx:NumberValidator allowNegative="false" domain="int" exceedsMaxError="输入的数字太大"
+							integerError="请输入正整数" invalidCharError="请输入正整数"
+							lowerThanMinError="输入的数字太小" maxValue="100" minValue="2" property="text"
+							source="{_cellWidth}" trigger="{_cellWidth}" triggerEvent="focusOut"/>
+	</fx:Declarations>
+	<mx:Form x="0" width="100%" height="100%" borderColor="#696969" borderVisible="true"
+			 dropShadowVisible="false">
+		<mx:FormHeading label="创建新项目"/>
+		<mx:FormItem label="项目名称">
+			<mx:TextInput id="_projectName" width="200"/>
+		</mx:FormItem>
+		<mx:FormItem label="格子宽度">
+			<mx:TextInput id="_cellWidth" width="200"/>
+		</mx:FormItem>
+		<mx:FormItem label="项目路径">
+			<s:HGroup width="100%">
+				<mx:Label id="_projectPath" width="160"/>
+				<s:Button width="30" label="..." click="onBrowse(event)"/>	
+			</s:HGroup>
+		</mx:FormItem>
+		<mx:FormItem>
+			<s:HGroup width="100%">
+				<s:Button id="_createBtn" label="创建" click="onCreate(event)"/>
+				<s:Button label="取消" click="onCancel(event)"/>
+			</s:HGroup>
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

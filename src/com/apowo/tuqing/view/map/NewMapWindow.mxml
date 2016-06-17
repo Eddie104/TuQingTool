@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="300" height="260" close="onCloseHandler(event)" title="新建地图">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.model.MapDataManager;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			
+			import org.libra.flex.utils.PopUpUtil;
+			
+			protected function onCloseHandler(event:CloseEvent = null):void
+			{
+				PopUpUtil.instance.removePopUp(this, 1);
+			}
+			
+			protected function onCancel(event:MouseEvent):void
+			{
+				onCloseHandler();
+			}
+			
+			protected function onCreate(event:MouseEvent):void
+			{
+				var name:String = _mapName.text;
+				if(name != ""){
+					var cellWidth:int = int(_cellWidth.text);
+					if(cellWidth % 4 == 0){
+						var cellRows:int = int(_cellRows.text);
+						if(cellRows > 0){
+							var cellCols:int = int(_cellCols.text);
+							if(cellCols > 0){
+								MapDataManager.instance.createNewMapData(name, cellWidth, cellRows, cellCols);
+								onCloseHandler();
+							}else{
+								Alert.show("请输入正确的格子列数", "ERROR");	
+							}
+						}else{
+							Alert.show("请输入正确的格子行数", "ERROR");	
+						}
+					}else{
+						Alert.show("格子宽度必须是4的倍数", "ERROR");	
+					}
+				}else{
+					Alert.show("请输入地图名", "ERROR");
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<mx:NumberValidator allowNegative="false" domain="int" exceedsMaxError="输入的数字太大"
+							integerError="请输入正整数" invalidCharError="请输入正整数"
+							lowerThanMinError="输入的数字太小" maxValue="100" minValue="2" property="text"
+							source="{_cellWidth}" trigger="{_cellWidth}" triggerEvent="focusOut"/>
+		<mx:NumberValidator allowNegative="false" domain="int" exceedsMaxError="输入的数字太大"
+							integerError="请输入正整数" invalidCharError="请输入正整数"
+							lowerThanMinError="输入的数字太小" maxValue="100" minValue="2" property="text"
+							source="{_cellRows}" trigger="{_cellRows}" triggerEvent="focusOut"/>
+		<mx:NumberValidator allowNegative="false" domain="int" exceedsMaxError="输入的数字太大"
+							integerError="请输入正整数" invalidCharError="请输入正整数"
+							lowerThanMinError="输入的数字太小" maxValue="100" minValue="2" property="text"
+							source="{_cellCols}" trigger="{_cellCols}" triggerEvent="focusOut"/>
+	</fx:Declarations>
+	<mx:Form x="0" width="100%" height="100%" borderColor="#696969" borderVisible="true"
+			 dropShadowVisible="false">
+		<mx:FormHeading label="创建新地图"/>
+		<mx:FormItem label="地图名">
+			<mx:TextInput id="_mapName" width="200"/>
+		</mx:FormItem>
+		<mx:FormItem label="格子宽度">
+			<mx:TextInput id="_cellWidth" width="200"/>
+		</mx:FormItem>
+		<mx:FormItem label="格子行数">
+			<mx:TextInput id="_cellRows" width="200"/>
+		</mx:FormItem>
+		<mx:FormItem label="格子列数">
+			<mx:TextInput id="_cellCols" width="200"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<s:HGroup width="100%">
+				<s:Button id="_createBtn" label="创建" click="onCreate(event)"/>
+				<s:Button label="取消" click="onCancel(event)"/>
+			</s:HGroup>
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

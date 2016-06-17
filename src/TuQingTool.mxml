@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:map="com.apowo.tuqing.view.map.*"
+					   xmlns:project="com.apowo.tuqing.view.project.*"
+					   width="1200" height="800"
+					   activate="onActivateHandler(event)"
+					   addedToStage="onAddedToStageHandler(event)" backgroundColor="#666666"
+					   closing="onClosingHandler(event)"
+					   creationComplete="onCreationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.events.FurnitureEvent;
+			import com.apowo.tuqing.events.MapEvent;
+			import com.apowo.tuqing.events.ProjectEvent;
+			import com.apowo.tuqing.model.MapDataManager;
+			import com.apowo.tuqing.model.ProjectManager;
+			import com.apowo.tuqing.model.data.BaseData;
+			import com.apowo.tuqing.model.data.FurnitureData;
+			import com.apowo.tuqing.model.data.MapData;
+			import com.apowo.tuqing.model.data.ProjectData;
+			import com.apowo.tuqing.view.about.AboutWindown;
+			import com.apowo.tuqing.view.furniture.FurnitureEditor;
+			import com.apowo.tuqing.view.map.NewMapWindow;
+			import com.apowo.tuqing.view.project.NewProjectWindow;
+			import com.as3xls.xls.formula.Functions;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.MenuEvent;
+			
+			import org.libra.flex.utils.PopUpUtil;
+			import org.libra.utils.FileUtil;
+			import org.libra.utils.ui.KeyPoll;
+
+			
+			private var _keyPoll:KeyPoll;
+			
+			protected function munuItemClickHandler(event:MenuEvent):void {
+				if(event.label == "家具编辑器") {
+					Alert.show("您单击的是家具编辑器按钮"); 
+				}else if(event.label == "关于") {
+					PopUpUtil.instance.addPopUp(new AboutWindown(), this, true, 1);
+				} else if(event.label == "测试") {
+					
+				} else if(event.label == "新建项目") {
+					newProject();
+				}
+			}
+			
+			protected function onCreationCompleteHandler(event:FlexEvent):void {
+				_resourceGroup.addEventListener(MapEvent.MAP_EVENT, onMapEvent);
+				_resourceGroup.addEventListener(ProjectEvent.PROJECT_EVENT, onProjectEvent);
+				_resourceGroup.addEventListener(FurnitureEvent.FURNITURE_EVENT, onFurnitureEvent);
+			}
+			
+			private function onMapEvent(evt:MapEvent):void{
+				switch(evt.subType){
+					case MapEvent.NEW_FILE:
+						newMapFile();
+						break;
+					case MapEvent.OPEN_FILE:
+						openMapFile();
+						break;
+					case MapEvent.MAP_CHANGED:
+						mapChanged(evt.data as MapData);
+						break;
+					case MapEvent.DELETE_FILE:
+						deleteMapFile(evt.data as MapData);
+						break;
+					case MapEvent.EDIT_FILE:
+						editMapFile(evt.data as MapData);
+						break;
+				}
+			}
+			
+			private function onProjectEvent(evt:ProjectEvent):void{
+				switch(evt.subType) {
+					case ProjectEvent.NEW_PROJECT:
+						newProject();
+						break;
+					case ProjectEvent.DELETE_PROJECT:
+						deleteProject(evt.data as ProjectData);
+						break;
+				}
+			}
+			
+			private function onFurnitureEvent(evt:FurnitureEvent):void{
+				switch(evt.subType){
+					case FurnitureEvent.EDIT_FURNITURE:
+						var win:FurnitureEditor = new FurnitureEditor();
+						win.furnitureData = evt.data as FurnitureData;
+						PopUpUtil.instance.addPopUp(win, this, true, 1);
+						break;
+					case FurnitureEvent.SELECT_FURNITURE:
+						_propertiesGroup.data = evt.data as BaseData;
+						break;
+				}
+			}
+			
+			protected function onAddedToStageHandler(event:Event):void {
+				_keyPoll = KeyPoll.getInstance(this.stage);
+				_keyPoll.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				_keyPoll.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+			}
+			
+			private function onKeyDown(evt:KeyboardEvent):void {
+//				trace(evt.keyCode);
+			}
+			
+			private function onKeyUp(evt:KeyboardEvent):void {
+//				trace(evt.keyCode);
+			}
+			
+			private function newProject():void{
+				PopUpUtil.instance.addPopUp(new NewProjectWindow(), this, true, 1);
+			}
+			
+			private function deleteProject(projectData:ProjectData):void{
+				var alert:Alert = Alert.show("确定删除" + projectData + "?", "注意", Alert.YES | Alert.NO, this);
+				alert.data = projectData;
+				alert.addEventListener(CloseEvent.CLOSE, this.onDeleteProject);
+			}
+			
+			private function onDeleteProject(evt:CloseEvent):void{
+				var alert:Alert = evt.target as Alert;
+				alert.removeEventListener(CloseEvent.CLOSE, this.onDeleteProject);
+				if(evt.detail == Alert.YES){
+					ProjectManager.instance.deleteProject(alert.data as ProjectData);
+				}
+			}
+			
+			// 新建一个地图
+			private function newMapFile():void{
+				PopUpUtil.instance.addPopUp(new NewMapWindow(), this, true, 1);
+			}
+			
+			// 打开地图文件
+			private function openMapFile():void{
+				
+			}
+			
+			private function deleteMapFile(mapData:MapData):void{
+				MapDataManager.instance.deleteMapData(mapData);
+			}
+			
+			private function editMapFile(mapData:MapData):void{
+				
+			}
+			
+			private function mapChanged(mapData:MapData):void{
+				_mapGroup.drawMap(mapData);
+			}
+			
+			protected function onClosingHandler(event:Event):void
+			{
+//				MapDataManager.instance.saveMapDataToLocal();
+				ProjectManager.instance.saveProjectDataToLocal();
+			}
+			
+			protected function onActivateHandler(event:Event):void
+			{
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>  
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->  
+		<fx:XMLList id="menuBar">  
+			<menuitem label="文件">
+				<menuitem label="新建项目"/>
+				<menuitem label="打开"/>
+				<menuitem label="保存" enabled="false" icon="myIcon"/>
+				<menuitem label="另存为..." toggled="true" type="check"/>
+				<menuitem label="" type="separator"/>
+				<menuitem label="输出">
+					<menuitem label="BMPL" groupName="one" type="radio"/>
+					<menuitem label="图片" groupName="one" toggled="true" type="radio"/>
+				</menuitem>
+				<menuitem label="打印"/>
+				<menuitem label="退出"/>
+			</menuitem>
+			<menuitem label="编辑"/>
+			<menuitem label="查看"/>
+			<menuitem label="工具">
+				<menuitem label="家具编辑器"/>
+			</menuitem>
+			<menuitem label="帮助">
+				<menuitem label="关于"/>
+				<menuitem label="测试"/>
+			</menuitem>
+		</fx:XMLList>  
+	</fx:Declarations>
+	<s:VGroup width="100%" height="100%">
+		<!-- 菜单栏 -->
+		<mx:MenuBar width="100%" dataProvider="{menuBar}" itemClick="munuItemClickHandler(event)"
+					labelField="@label"/>
+		<!-- 工具栏 -->
+		<s:HGroup width="100%" height="26" verticalAlign="middle">
+			<s:Label text="工具栏"/>
+		</s:HGroup>
+		<mx:HDividedBox width="100%" height="100%" liveDragging="true">
+			<s:Group width="15%" height="100%" minWidth="200">
+				<project:ResourceGroup id="_resourceGroup" width="100%" height="100%"/>
+			</s:Group>
+			<s:Group width="65%" height="100%">
+				<map:MapGroup id="_mapGroup" width="100%" height="100%"/>
+			</s:Group>
+			<s:Group width="20%" height="100%">
+				<map:PropertiesGroup id="_propertiesGroup" width="100%" height="100%"/>
+			</s:Group>
+		</mx:HDividedBox>
+	</s:VGroup>
+</s:WindowedApplication>

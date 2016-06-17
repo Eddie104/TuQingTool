@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="onCreationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.BitmapDataPool;
+			import com.apowo.tuqing.events.BmdEvent;
+			import com.apowo.tuqing.model.ProjectManager;
+			import com.apowo.tuqing.model.data.BaseData;
+			import com.apowo.tuqing.model.data.IDisplayData;
+			
+			import mx.events.FlexEvent;
+			
+			private var _data:BaseData;
+			
+			
+			public function get data():BaseData
+			{
+				return _data;
+			}
+
+			public function set data(value:BaseData):void
+			{
+				_data = value;
+				if(_data is IDisplayData){
+					var displayData:IDisplayData = _data as IDisplayData;
+					_img.source = BitmapDataPool.instance.getBmd(displayData.getUrl());
+				}
+			}
+
+			protected function onCreationCompleteHandler(event:FlexEvent):void
+			{
+				BitmapDataPool.instance.addEventListener(BmdEvent.LOAD_COMPLETED, onLoadBmdCompleted);
+			}
+			
+			private function onLoadBmdCompleted(evt:BmdEvent):void{
+				if(_data is IDisplayData){
+					var displayData:IDisplayData = _data as IDisplayData;
+					if(evt.url == displayData.getUrl()){
+						_img.source = evt.bmd;
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Image id="_img"/>
+</s:VGroup>

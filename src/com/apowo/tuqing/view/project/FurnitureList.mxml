@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300"
+		creationComplete="onCreationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.events.FurnitureEvent;
+			import com.apowo.tuqing.model.FurnitureManager;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			protected function onCreationCompleteHandler(event:FlexEvent):void
+			{
+				var contextMenu:ContextMenu = new ContextMenu();
+				// 编辑按钮
+				var editItem:NativeMenuItem = new NativeMenuItem("编辑");
+				editItem.addEventListener(Event.SELECT, onEdit);
+				contextMenu.addItem(editItem);
+				
+				this.contextMenu = contextMenu;
+			}
+			
+			private function onEdit(evt:Event):void{
+				if(_list.selectedItem){
+					this.dispatchEvent(new FurnitureEvent(FurnitureEvent.EDIT_FURNITURE, _list.selectedItem));	
+				}else{
+					Alert.show("请先选中要编辑的家具", "注意");	
+				}
+			}
+			
+			protected function onKeyChanged(event:TextOperationEvent):void
+			{
+				FurnitureManager.instance.updateFurnitureShowingList(_keyInput.text);
+			}
+			
+			protected function onListChanged(event:IndexChangeEvent):void
+			{
+				if(_list.selectedItem)
+					this.dispatchEvent(new FurnitureEvent(FurnitureEvent.SELECT_FURNITURE, _list.selectedItem));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:HGroup width="100%" height="26" paddingLeft="6" paddingRight="6" verticalAlign="middle">
+		<s:Label height="100%" text="关键字" verticalAlign="middle"/>
+		<s:TextInput id="_keyInput" width="100%" height="100%" textAlign="left" change="onKeyChanged(event)"/>
+	</s:HGroup>
+	<s:List id="_list" width="100%" height="100%" change="onListChanged(event)"
+			dataProvider="{FurnitureManager.instance.furnitureShowingList}"/>
+</s:VGroup>

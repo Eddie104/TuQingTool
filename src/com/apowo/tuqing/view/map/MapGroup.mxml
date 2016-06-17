@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.model.data.MapData;
+			
+			import org.libra.utils.displayObject.Display45Util;
+			import org.libra.utils.displayObject.GraphicsUtil;
+			
+			public function drawMap(mapData:MapData):void{
+				Display45Util.setContentSize(mapData.cellWidth, mapData.cellWidth >> 1);
+				GraphicsUtil.drawDiamondNet(this._netLayer.graphics, new Point(this.width >> 1, 100), 0, 0, mapData.cellRows,mapData.cellCols, mapData.cellWidth);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Scroller width="100%" height="100%" horizontalScrollPolicy="on" verticalScrollPolicy="on">
+		<s:Group width="100%" height="100%">
+			<mx:UIComponent id="_netLayer" mouseEnabled="false" width="100%" height="100%"/>	
+		</s:Group>
+	</s:Scroller>
+</s:Group>

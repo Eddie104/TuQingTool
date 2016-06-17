@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="600" height="400"
+			   close="onCloseHandler(event)" title="家具编辑器" creationComplete="onCreationCompleted(event)" addedToStage="onAddedToStageHandler(event)" xmlns:furniture="com.apowo.tuqing.view.furniture.*">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.model.ProjectManager;
+			import com.apowo.tuqing.model.data.FurnitureData;
+			
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			import org.libra.flex.utils.PopUpUtil;
+			import org.libra.utils.displayObject.Display45Util;
+			import org.libra.utils.displayObject.GraphicsUtil;
+			import org.libra.utils.ui.KeyPoll;
+			
+			private var _furnitureData:FurnitureData;
+			
+			public static var topPoint:Point = new Point(0, 20);
+			
+			private var _isDraging:Boolean;
+			
+			private var _lastDragX:Number;
+			
+			private var _lastDragY:Number;
+			
+			/**
+			 * 当前的操作 
+			 */
+			private var _curOperation:String = ToolBarEvent.MOVE;
+			
+			public function get furnitureData():FurnitureData
+			{
+				return _furnitureData;
+			}
+
+			public function set furnitureData(value:FurnitureData):void
+			{
+				_furnitureData = value;
+			}
+
+			protected function onCloseHandler(event:CloseEvent = null):void
+			{
+				KeyPoll.getInstance(this.stage).removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+				KeyPoll.getInstance(this.stage).removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				
+				_furniture.removeEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+				this.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				this.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				
+				_toolBar.removeEventListener(ToolBarEvent.TOOL_BAR_EVENT, onToolBarEvent);
+				
+				PopUpUtil.instance.removePopUp(this, 1);
+			}
+			
+			protected function onCreationCompleted(event:FlexEvent):void
+			{
+				topPoint.x = this.width >> 1;
+				var width:int = ProjectManager.instance.curProjectData.cellWidth;
+				Display45Util.setContentSize(width, width >> 1);
+				GraphicsUtil.drawDiamondNet(_fuinitureGroup.graphics, topPoint, 0, 0, 10, 10, width);
+				
+				_furniture.data = _furnitureData;
+				_furniture.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+				this.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				this.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				
+				_toolBar.addEventListener(ToolBarEvent.TOOL_BAR_EVENT, onToolBarEvent);
+			}
+			
+			private function onMouseDown(evt:MouseEvent):void{
+				if(_curOperation == ToolBarEvent.MOVE){
+					_lastDragX = evt.stageX;
+					_lastDragY = evt.stageY;
+					_isDraging = true;	
+				}
+			}
+			
+			private function onMouseUp(evt:MouseEvent):void{
+				_isDraging = false;
+			}
+			
+			private function onMouseMove(evt:MouseEvent):void{
+				if(_isDraging){
+					var offsetX:Number = evt.stageX - _lastDragX;
+					var offsetY:Number = evt.stageY - _lastDragY;
+					_lastDragX = evt.stageX;
+					_lastDragY = evt.stageY;
+					_furniture.x += offsetX;
+					_furniture.y += offsetY;
+				}
+			}
+			
+			protected function onAddedToStageHandler(event:Event):void
+			{
+				KeyPoll.getInstance(this.stage).addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+				KeyPoll.getInstance(this.stage).addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				
+				this.setFocus();
+			}
+			
+			private function onKeyUp(evt:KeyboardEvent):void{
+				switch(evt.keyCode){
+					case Keyboard.UP:
+						_furniture.y--;
+						break;
+					case Keyboard.DOWN:
+						_furniture.y++;
+						break;
+					case Keyboard.LEFT:
+						_furniture.x--;
+						break;
+					case Keyboard.RIGHT:
+						_furniture.x++;
+						break;
+				}
+			}
+			
+			private function onKeyDown(evt:KeyboardEvent):void{
+				
+			}
+			
+			private function onToolBarEvent(evt:ToolBarEvent):void{
+				_curOperation = evt.subType;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:VGroup width="100%" height="100%">
+		<furniture:ToolBar id="_toolBar" height="26" width="100%"/>
+		<s:Group id="_fuinitureGroup" width="100%" height="260">
+			<furniture:Furniture id="_furniture"/>
+		</s:Group>
+		<s:VGroup width="100%" height="100%">
+			
+		</s:VGroup>
+	</s:VGroup>
+</s:TitleWindow>

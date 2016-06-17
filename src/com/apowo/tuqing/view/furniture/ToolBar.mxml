@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="400" height="300" paddingLeft="6" verticalAlign="middle" addedToStage="onAddedToStageHandler(event)" removedFromStage="onRemovedFromStageHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import org.libra.utils.ui.KeyPoll;
+			
+			protected function onChangeToMove(event:Event = null):void
+			{
+				this.dispatchEvent(new ToolBarEvent(ToolBarEvent.MOVE));
+			}
+			
+			protected function onChangeToSubFace(event:Event = null):void
+			{
+				this.dispatchEvent(new ToolBarEvent(ToolBarEvent.SUB_FACE));
+			}
+			
+			protected function onAddedToStageHandler(event:Event):void
+			{
+				KeyPoll.getInstance(this.stage).addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+			}
+			
+			protected function onRemovedFromStageHandler(event:Event):void
+			{
+				KeyPoll.getInstance(this.stage).removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+			}
+			
+			private function onKeyUp(evt:KeyboardEvent):void{
+				switch(evt.keyCode){
+					case Keyboard.Q:
+						if(!_moveButton.selected){
+							_moveButton.selected = true;
+							onChangeToMove();
+						}
+						break;
+					case Keyboard.W:
+						if(!_subfaceButton.selected){
+							_subfaceButton.selected = true;
+							onChangeToSubFace();
+						}
+						break;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="radiogroup1"/>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:RadioButton id="_moveButton" label="拖动" groupName="radiogroup1" selected="true" change="onChangeToMove(event)" />
+	<s:RadioButton id="_subfaceButton" label="点底面点" groupName="radiogroup1" change="onChangeToSubFace(event)"/>
+</s:HGroup>

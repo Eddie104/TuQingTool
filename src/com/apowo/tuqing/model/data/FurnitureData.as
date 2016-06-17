@@ -11,9 +11,33 @@ package com.apowo.tuqing.model.data
 		
 		private var _asset:String;
 		
+		private var _offsetX:int;
+		
+		private var _offsetY:int;
+		
 		public function FurnitureData()
 		{
 			super();
+		}
+
+		public function get offsetY():int
+		{
+			return _offsetY;
+		}
+
+		public function set offsetY(value:int):void
+		{
+			_offsetY = value;
+		}
+
+		public function get offsetX():int
+		{
+			return _offsetX;
+		}
+
+		public function set offsetX(value:int):void
+		{
+			_offsetX = value;
 		}
 
 		public function get subface():String

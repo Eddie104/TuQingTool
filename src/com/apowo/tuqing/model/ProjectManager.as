@@ -78,7 +78,7 @@ package com.apowo.tuqing.model
 				var fs:FileStream = new FileStream();
 				fs.open(f, FileMode.WRITE);
 //				fs.writeUTF();
-				fs.writeMultiByte("Type,Name,Description,Asset,Subface\n0,0,2,2,0\n主键,名字,描述,资源,底面点\nint,string,string,string,string", "GBK");
+				fs.writeMultiByte("Type,Name,Description,Asset,Subface,OffsetX,OffsetY\n0,0,2,2,0,2,2\n主键,名字,描述,资源,底面点,偏移值X,偏移值Y\nint,string,string,string,string,int,int", "GBK");
 				fs.close();	
 			}
 			

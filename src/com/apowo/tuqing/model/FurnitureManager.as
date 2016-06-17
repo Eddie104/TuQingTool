@@ -63,6 +63,12 @@ package com.apowo.tuqing.model
 								case "Subface":
 									furni.subface = csv.data[i][j];
 									break;
+								case "OffsetX":
+									furni.offsetX = int(csv.data[i][j]);
+									break;
+								case "OffsetY":
+									furni.offsetY = int(csv.data[i][j]);
+									break;
 							}
 						}
 						_furnitureDataList.push(furni);

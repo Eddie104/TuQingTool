@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" width="600" height="400"
-			   close="onCloseHandler(event)" title="家具编辑器" creationComplete="onCreationCompleted(event)" addedToStage="onAddedToStageHandler(event)" xmlns:furniture="com.apowo.tuqing.view.furniture.*">
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:furniture="com.apowo.tuqing.view.furniture.*"
+			   width="800" height="600" addedToStage="onAddedToStageHandler(event)"
+			   close="onCloseHandler(event)" creationComplete="onCreationCompleted(event)"
+			   title="家具编辑器">
 	<fx:Script>
 		<![CDATA[
+			import com.apowo.tuqing.model.FurnitureManager;
 			import com.apowo.tuqing.model.ProjectManager;
 			import com.apowo.tuqing.model.data.FurnitureData;
 			
@@ -57,7 +61,7 @@
 			
 			protected function onCreationCompleted(event:FlexEvent):void
 			{
-				topPoint.x = this.width >> 1;
+				topPoint.x = (this.width - _listGroup.width) >> 1;
 				var width:int = ProjectManager.instance.curProjectData.cellWidth;
 				Display45Util.setContentSize(width, width >> 1);
 				GraphicsUtil.drawDiamondNet(_fuinitureGroup.graphics, topPoint, 0, 0, 10, 10, width);
@@ -91,6 +95,7 @@
 					_furniture.x += offsetX;
 					_furniture.y += offsetY;
 				}
+				_furniture.setFocus();
 			}
 			
 			protected function onAddedToStageHandler(event:Event):void
@@ -131,13 +136,18 @@
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
-	<s:VGroup width="100%" height="100%">
-		<furniture:ToolBar id="_toolBar" height="26" width="100%"/>
-		<s:Group id="_fuinitureGroup" width="100%" height="260">
-			<furniture:Furniture id="_furniture"/>
-		</s:Group>
-		<s:VGroup width="100%" height="100%">
-			
+	<s:HGroup width="100%" height="100%">
+		<s:VGroup id="_listGroup" width="160" height="100%">
+			<s:List width="100%" height="100%" dataProvider="{FurnitureManager.instance.furnitureShowingList}"/>
 		</s:VGroup>
-	</s:VGroup>
+		<s:VGroup width="100%" height="100%">
+			<furniture:ToolBar id="_toolBar" width="100%" height="26"/>
+			<s:Group id="_fuinitureGroup" width="100%" height="260">
+				<furniture:Furniture id="_furniture"/>
+			</s:Group>
+			<s:VGroup width="100%" height="100%">
+				
+			</s:VGroup>
+		</s:VGroup>
+	</s:HGroup>
 </s:TitleWindow>

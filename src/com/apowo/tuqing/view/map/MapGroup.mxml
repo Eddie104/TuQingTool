@@ -1,17 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="onCreationCompleted(event)" addedToStage="onAddedToStage(event)">
 	<fx:Script>
 		<![CDATA[
 			import com.apowo.tuqing.model.data.MapData;
 			
+			import mx.events.FlexEvent;
+			
 			import org.libra.utils.displayObject.Display45Util;
 			import org.libra.utils.displayObject.GraphicsUtil;
 			
+			private var _topPoint:Point = new Point();
+			
 			public function drawMap(mapData:MapData):void{
-				Display45Util.setContentSize(mapData.cellWidth, mapData.cellWidth >> 1);
-				GraphicsUtil.drawDiamondNet(this._netLayer.graphics, new Point(this.width >> 1, 100), 0, 0, mapData.cellRows,mapData.cellCols, mapData.cellWidth);
+				if(mapData){
+					var mapWidth:int = mapData.getWidth();
+					var mapHeight:int = mapData.getHeight();
+					
+					_topPoint.x = mapData.cellRows * mapData.cellWidth >> 1;
+					this._netLayer.width = _topPoint.x + (mapData.cellCols * mapData.cellWidth >> 1);
+					this._netLayer.height = _topPoint.y +  mapHeight;
+					
+					Display45Util.setContentSize(mapData.cellWidth, mapData.cellWidth >> 1);
+					Display45Util.setTopPoint(_topPoint);
+					
+					GraphicsUtil.drawRect(this._netLayer.graphics, 0, 0, this.width, this.height, 0x00ff00, 0, true);
+					GraphicsUtil.lineRect(_netLayer.graphics, _topPoint.x - (mapData.cellRows * mapData.cellWidth >> 1), _topPoint.y, mapWidth, mapHeight, 0xffffff, false);
+					GraphicsUtil.drawDiamondNet(this._netLayer.graphics, new Point(), 0, 0, mapData.cellRows,mapData.cellCols, mapData.cellWidth, 0xff0000, false);
+				}
+			}
+			
+			protected function onAddedToStage(event:Event):void
+			{
+				_netLayer.mouseEnabled = true;
+				_netLayer.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoved);
+				_netLayer.addEventListener(MouseEvent.CLICK, onClicked);
+			}
+			
+			private function onMouseMoved(evt:MouseEvent):void{
+				//trace(Display45Util.getItemIndex(new Point(evt.localX, evt.localY)));
+			}
+			
+			private function onClicked(evt:MouseEvent):void{
+				trace(Display45Util.getItemIndex(new Point(evt.localX, evt.localY)));
+			}
+			
+			protected function onCreationCompleted(event:FlexEvent):void
+			{
+				_topPoint.y = 150;
 			}
 			
 		]]>

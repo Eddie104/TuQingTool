@@ -7,9 +7,11 @@
 		 dataProvider="{ProjectManager.instance.projectDataList}">
 	<fx:Script>
 		<![CDATA[
+			import com.apowo.tuqing.events.MapEvent;
 			import com.apowo.tuqing.events.ProjectEvent;
+			import com.apowo.tuqing.events.ProjectTreeEvent;
 			import com.apowo.tuqing.model.ProjectManager;
-			import com.apowo.tuqing.model.data.ProjectData;
+			import com.apowo.tuqing.model.data.project.ProjectData;
 			
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
@@ -19,6 +21,8 @@
 			private var newProjectItem:NativeMenuItem = new NativeMenuItem("新建项目");
 			
 			private var deleteProjectItem:NativeMenuItem = new NativeMenuItem("删除项目");
+			
+			private var newMapItem:NativeMenuItem = new NativeMenuItem("新建地图");
 			
 			protected function onCreationComplete(event:FlexEvent):void
 			{
@@ -34,7 +38,9 @@
 				// 分割线
 				contextMenu.addItem(new NativeMenuItem(null, true));
 				
-				
+				newMapItem.addEventListener(Event.SELECT, onNewMap);
+				newMapItem.enabled = false;
+				contextMenu.addItem(newMapItem);
 				
 //				// 打开按钮
 //				var openMenuItem:NativeMenuItem = new NativeMenuItem("打开");
@@ -65,13 +71,23 @@
 				this.dispatchEvent(new ProjectEvent(ProjectEvent.DELETE_PROJECT, this.selectedItem));
 			}
 			
+			private function onNewMap(evt:Event):void{
+				this.dispatchEvent(new MapEvent(MapEvent.NEW_FILE));
+			}
+			
 			protected function onChangeHandler(event:ListEvent):void
 			{
 				if(this.selectedItem is ProjectData){
 					deleteProjectItem.enabled = true;
 				} else {
 					deleteProjectItem.enabled = false;
+					if(this.selectedItem.toString() == "mapDatas"){
+						this.newMapItem.enabled = true;
+					}else{
+						this.newMapItem.enabled = false;
+					}
 				}
+				this.dispatchEvent(new ProjectTreeEvent(ProjectTreeEvent.SELECTED_ITEM_CHANGED, this.selectedItem));
 			}
 			
 			protected function onItemOpenHandler(event:TreeEvent):void

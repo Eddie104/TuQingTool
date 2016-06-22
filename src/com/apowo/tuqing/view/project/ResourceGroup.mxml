@@ -8,10 +8,11 @@
 			import com.apowo.tuqing.events.FurnitureEvent;
 			import com.apowo.tuqing.events.MapEvent;
 			import com.apowo.tuqing.events.ProjectEvent;
+			import com.apowo.tuqing.events.ProjectTreeEvent;
 			import com.apowo.tuqing.model.MapDataManager;
 			import com.apowo.tuqing.model.ProjectManager;
 			import com.apowo.tuqing.model.data.MapData;
-			import com.apowo.tuqing.model.data.ProjectData;
+			import com.apowo.tuqing.model.data.project.ProjectData;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.FileSystemEnumerationMode;
@@ -54,6 +55,8 @@
 				
 				
 				_projectTree.addEventListener(ProjectEvent.PROJECT_EVENT, onProjectEvent);
+				_projectTree.addEventListener(MapEvent.MAP_EVENT, onMapEvent);
+				_projectTree.addEventListener(ProjectTreeEvent.PROJECT_TREE_EVENT, onProjectTreeEvent);
 				_furniList.addEventListener(FurnitureEvent.FURNITURE_EVENT, onFurnitureEvent);
 			}
 			
@@ -61,33 +64,41 @@
 				this.dispatchEvent(new ProjectEvent(evt.subType, evt.data));
 			}
 			
+			private function onMapEvent(evt:MapEvent):void{
+				this.dispatchEvent(new MapEvent(evt.subType, evt.data));
+			}
+			
+			private function onProjectTreeEvent(evt:ProjectTreeEvent):void{
+				this.dispatchEvent(new ProjectTreeEvent(evt.subType, evt.data));
+			}
+			
 			private function onFurnitureEvent(evt:FurnitureEvent):void{
 				this.dispatchEvent(new FurnitureEvent(evt.subType, evt.data));
 			}
 			
-			private function onNewFile(evt:Event):void{
-				this.dispatchEvent(new MapEvent(MapEvent.NEW_FILE));
-			}
-			
-			private function onOpenFile(evt:Event):void{
-				this.dispatchEvent(new MapEvent(MapEvent.OPEN_FILE));
-			}
-			
-			private function onEditFile(evt:Event):void{
-				//this.dispatchEvent(new MapEvent(MapEvent.EDIT_FILE, _mapList.selectedItem as MapData));
-			}
-			
-			private function onDeleteFile(evt:Event):void{
-				//this.dispatchEvent(new MapEvent(MapEvent.DELETE_FILE, _mapList.selectedItem as MapData));
-			}
-			
-			protected function onMapDataChangeHandler(event:IndexChangeEvent):void
-			{
-//				var mapData:MapData = _mapList.selectedItem as MapData;
-//				if(mapData){
-//					this.dispatchEvent(new MapEvent(MapEvent.MAP_CHANGED, mapData));
-//				}
-			}
+//			private function onNewFile(evt:Event):void{
+//				this.dispatchEvent(new MapEvent(MapEvent.NEW_FILE));
+//			}
+//			
+//			private function onOpenFile(evt:Event):void{
+//				this.dispatchEvent(new MapEvent(MapEvent.OPEN_FILE));
+//			}
+//			
+//			private function onEditFile(evt:Event):void{
+//				//this.dispatchEvent(new MapEvent(MapEvent.EDIT_FILE, _mapList.selectedItem as MapData));
+//			}
+//			
+//			private function onDeleteFile(evt:Event):void{
+//				//this.dispatchEvent(new MapEvent(MapEvent.DELETE_FILE, _mapList.selectedItem as MapData));
+//			}
+//			
+//			protected function onMapDataChangeHandler(event:IndexChangeEvent):void
+//			{
+////				var mapData:MapData = _mapList.selectedItem as MapData;
+////				if(mapData){
+////					this.dispatchEvent(new MapEvent(MapEvent.MAP_CHANGED, mapData));
+////				}
+//			}
 			
 		]]>
 	</fx:Script>

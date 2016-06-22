@@ -1,7 +1,7 @@
 package com.apowo.tuqing.model
 {
 	import com.apowo.tuqing.model.data.FurnitureData;
-	import com.apowo.tuqing.model.data.ProjectData;
+	import com.apowo.tuqing.model.data.project.ProjectData;
 	
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;

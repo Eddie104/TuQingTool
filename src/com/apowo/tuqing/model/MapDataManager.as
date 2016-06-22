@@ -1,22 +1,24 @@
 package com.apowo.tuqing.model
 {
 	
+	import com.adobe.serialization.json.JSONDecoder;
 	import com.adobe.serialization.json.JSONEncoder;
+	import com.apowo.tuqing.model.data.MapData;
 	
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	
 	import mx.collections.ArrayCollection;
-	import com.apowo.tuqing.model.data.MapData;
 
 	public final class MapDataManager
 	{
 		
 		private static var _instance:MapDataManager;
 		
-		[Bindable]
-		public var mapDataList:ArrayCollection = new ArrayCollection();
+		private var _mapDataList:ArrayCollection = new ArrayCollection();
+		
+		private var _curMapData:MapData;
 		
 		public function MapDataManager()
 		{
@@ -24,48 +26,43 @@ package com.apowo.tuqing.model
 		}
 		
 		private function readMapDataFromLocal():void{
-			var file:File = new File(File.desktopDirectory.nativePath + File.separator + "test.json");
-			if(file.exists){
+			var file:File = new File(ProjectManager.instance.curProjectData.path + File.separator + "mapDatas");
+			for each(var f:File in file.getDirectoryListing()){
 				var fs:FileStream = new FileStream();
-				fs.open(file, FileMode.READ);
-				var jsonStr:String = fs.readUTF();
+				fs.open(f, FileMode.READ);
+				var arrStr:String = fs.readUTFBytes(f.size);
 				fs.close();
 				
-				var mapDataJsonArray:Array = JSON.parse(jsonStr) as Array;
-				var mapDataJson:Object = null;
-				for(var i:int = 0; i < mapDataJsonArray.length; i++){
-					mapDataJson = mapDataJsonArray[i];
-					createNewMapData(mapDataJson.name, mapDataJson.cellWidth, mapDataJson.cellRows, mapDataJson.cellCols);
-				}
+				var jsonVal:Object = new JSONDecoder(arrStr).getValue();
+				var mapData:MapData = new MapData(jsonVal.name, jsonVal.cellWidth, jsonVal.cellRows, jsonVal.cellCols, jsonVal.mapArr);
+				_mapDataList.addItem(mapData);
 			}
-		}
-		
-		public function saveMapDataToLocal():void{
-			var jsonStr:String = '[\n';
-			for(var i:int = 0; i < mapDataList.length; i++){
-				jsonStr += "\t" +  new JSONEncoder(mapDataList[i]).getString() + (i == mapDataList.length - 1 ? "" : ",") +  "\n";
-			}
-			jsonStr += "]";
-			
-			var file:File = new File(File.desktopDirectory.nativePath + File.separator + "test.json");
-			var fs:FileStream = new FileStream();
-			fs.open(file, FileMode.WRITE);
-			fs.writeUTF(jsonStr);
-			fs.close();
 		}
 		
 		public function createNewMapData(name:String, cellWidth:int, cellRows:int, cellCols:int):void{
 			var mapData:MapData = new MapData(name, cellWidth, cellRows, cellCols);
-			mapDataList.addItem(mapData);
+			mapData.saveToLocal();
+			_mapDataList.addItem(mapData);
+			ProjectManager.instance.curProjectData.refreshFiles();
 		}
 		
 		public function deleteMapData(mapData:MapData):void{
-			for each(var m:MapData in mapDataList){
+			for each(var m:MapData in _mapDataList){
 				if(m == mapData){
-					mapDataList.removeItemAt(mapDataList.getItemIndex(m));
+					_mapDataList.removeItemAt(_mapDataList.getItemIndex(m));
 					return;
 				}
 			}
+		}
+		
+		public function setCurMapData(name:String):MapData{
+			for each(var mapData:MapData in _mapDataList){
+				if(mapData.name == name){
+					_curMapData = mapData;
+					return _curMapData;
+				}
+			}
+			return null;
 		}
 		
 		public static function get instance():MapDataManager{

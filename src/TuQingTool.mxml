@@ -14,12 +14,14 @@
 			import com.apowo.tuqing.events.FurnitureEvent;
 			import com.apowo.tuqing.events.MapEvent;
 			import com.apowo.tuqing.events.ProjectEvent;
+			import com.apowo.tuqing.events.ProjectTreeEvent;
 			import com.apowo.tuqing.model.MapDataManager;
 			import com.apowo.tuqing.model.ProjectManager;
 			import com.apowo.tuqing.model.data.BaseData;
 			import com.apowo.tuqing.model.data.FurnitureData;
 			import com.apowo.tuqing.model.data.MapData;
-			import com.apowo.tuqing.model.data.ProjectData;
+			import com.apowo.tuqing.model.data.project.FileNode;
+			import com.apowo.tuqing.model.data.project.ProjectData;
 			import com.apowo.tuqing.view.about.AboutWindown;
 			import com.apowo.tuqing.view.furniture.FurnitureEditor;
 			import com.apowo.tuqing.view.map.NewMapWindow;
@@ -53,6 +55,7 @@
 			protected function onCreationCompleteHandler(event:FlexEvent):void {
 				_resourceGroup.addEventListener(MapEvent.MAP_EVENT, onMapEvent);
 				_resourceGroup.addEventListener(ProjectEvent.PROJECT_EVENT, onProjectEvent);
+				_resourceGroup.addEventListener(ProjectTreeEvent.PROJECT_TREE_EVENT, onProjectTreeEvent);
 				_resourceGroup.addEventListener(FurnitureEvent.FURNITURE_EVENT, onFurnitureEvent);
 			}
 			
@@ -64,9 +67,9 @@
 					case MapEvent.OPEN_FILE:
 						openMapFile();
 						break;
-					case MapEvent.MAP_CHANGED:
-						mapChanged(evt.data as MapData);
-						break;
+//					case MapEvent.MAP_CHANGED:
+//						mapChanged(evt.data as MapData);
+//						break;
 					case MapEvent.DELETE_FILE:
 						deleteMapFile(evt.data as MapData);
 						break;
@@ -83,6 +86,22 @@
 						break;
 					case ProjectEvent.DELETE_PROJECT:
 						deleteProject(evt.data as ProjectData);
+						break;
+				}
+			}
+			
+			private function onProjectTreeEvent(evt:ProjectTreeEvent):void{
+				switch(evt.subType){
+					case ProjectTreeEvent.SELECTED_ITEM_CHANGED:
+						var item:Object = evt.data;
+						if(item is FileNode){
+							var fileNode:FileNode = item as FileNode;
+							switch(fileNode.file.extension){
+								case "map":
+									_mapGroup.drawMap(MapDataManager.instance.setCurMapData(fileNode.name));									
+									break;
+							}
+						}
 						break;
 				}
 			}
@@ -148,10 +167,6 @@
 			
 			private function editMapFile(mapData:MapData):void{
 				
-			}
-			
-			private function mapChanged(mapData:MapData):void{
-				_mapGroup.drawMap(mapData);
 			}
 			
 			protected function onClosingHandler(event:Event):void

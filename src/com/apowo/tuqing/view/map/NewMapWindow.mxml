@@ -6,6 +6,7 @@
 	<fx:Script>
 		<![CDATA[
 			import com.apowo.tuqing.model.MapDataManager;
+			import com.apowo.tuqing.model.ProjectManager;
 			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -26,13 +27,13 @@
 			{
 				var name:String = _mapName.text;
 				if(name != ""){
-					var cellWidth:int = int(_cellWidth.text);
-					if(cellWidth % 4 == 0){
+//					var cellWidth:int = int(_cellWidth.text);
+//					if(cellWidth % 4 == 0){
 						var cellRows:int = int(_cellRows.text);
 						if(cellRows > 0){
 							var cellCols:int = int(_cellCols.text);
 							if(cellCols > 0){
-								MapDataManager.instance.createNewMapData(name, cellWidth, cellRows, cellCols);
+								MapDataManager.instance.createNewMapData(name, ProjectManager.instance.curProjectData.cellWidth, cellRows, cellCols);
 								onCloseHandler();
 							}else{
 								Alert.show("请输入正确的格子列数", "ERROR");	
@@ -40,9 +41,9 @@
 						}else{
 							Alert.show("请输入正确的格子行数", "ERROR");	
 						}
-					}else{
-						Alert.show("格子宽度必须是4的倍数", "ERROR");	
-					}
+//					}else{
+//						Alert.show("格子宽度必须是4的倍数", "ERROR");	
+//					}
 				}else{
 					Alert.show("请输入地图名", "ERROR");
 				}
@@ -52,10 +53,12 @@
 	</fx:Script>
 	<fx:Declarations>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<!--
 		<mx:NumberValidator allowNegative="false" domain="int" exceedsMaxError="输入的数字太大"
 							integerError="请输入正整数" invalidCharError="请输入正整数"
 							lowerThanMinError="输入的数字太小" maxValue="100" minValue="2" property="text"
 							source="{_cellWidth}" trigger="{_cellWidth}" triggerEvent="focusOut"/>
+		-->
 		<mx:NumberValidator allowNegative="false" domain="int" exceedsMaxError="输入的数字太大"
 							integerError="请输入正整数" invalidCharError="请输入正整数"
 							lowerThanMinError="输入的数字太小" maxValue="100" minValue="2" property="text"
@@ -71,9 +74,11 @@
 		<mx:FormItem label="地图名">
 			<mx:TextInput id="_mapName" width="200"/>
 		</mx:FormItem>
+		<!--
 		<mx:FormItem label="格子宽度">
 			<mx:TextInput id="_cellWidth" width="200"/>
 		</mx:FormItem>
+		-->
 		<mx:FormItem label="格子行数">
 			<mx:TextInput id="_cellRows" width="200"/>
 		</mx:FormItem>

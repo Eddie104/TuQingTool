@@ -5,7 +5,7 @@ package com.apowo.tuqing.model
 	import flash.filesystem.FileStream;
 	
 	import mx.collections.ArrayCollection;
-	import com.apowo.tuqing.model.data.ProjectData;
+	import com.apowo.tuqing.model.data.project.ProjectData;
 
 	public final class ProjectManager
 	{

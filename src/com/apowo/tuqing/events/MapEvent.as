@@ -15,7 +15,7 @@ package com.apowo.tuqing.events
 		
 		public static const EDIT_FILE:String = "editFile";
 		
-		public static const MAP_CHANGED:String = "mapChanged";
+//		public static const MAP_CHANGED:String = "mapChanged";
 		
 		public function MapEvent(subType:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

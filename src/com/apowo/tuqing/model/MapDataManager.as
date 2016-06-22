@@ -39,6 +39,12 @@ package com.apowo.tuqing.model
 			}
 		}
 		
+		public function saveMapDataToLocal():void{
+			for each(var map:MapData in _mapDataList){
+				map.saveToLocal();
+			}
+		}
+		
 		public function createNewMapData(name:String, cellWidth:int, cellRows:int, cellCols:int):void{
 			var mapData:MapData = new MapData(name, cellWidth, cellRows, cellCols);
 			mapData.saveToLocal();

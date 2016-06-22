@@ -35,7 +35,7 @@ package com.apowo.tuqing.model.data
 				for(var row:int = 0; row < cellRows; row++){
 					_mapArr[row] = [];
 					for(var col:int = 0; col < cellCols; col++){
-						_mapArr[row][col] = 1;
+						_mapArr[row][col] = 0;
 					}
 				}	
 			}else{

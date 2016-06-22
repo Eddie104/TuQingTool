@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="onCreationCompleted(event)" addedToStage="onAddedToStage(event)">
 	<fx:Script>
@@ -13,7 +13,11 @@
 			
 			private var _topPoint:Point = new Point();
 			
+			private var _mapData:MapData = null;
+			private var _floorList:Vector.<Vector.<FloorTile>> = new Vector.<Vector.<FloorTile>>();
+			
 			public function drawMap(mapData:MapData):void{
+				_mapData = mapData;
 				if(mapData){
 					var mapWidth:int = mapData.getWidth();
 					var mapHeight:int = mapData.getHeight();
@@ -28,6 +32,21 @@
 					GraphicsUtil.drawRect(this._netLayer.graphics, 0, 0, this.width, this.height, 0x00ff00, 0, true);
 					GraphicsUtil.lineRect(_netLayer.graphics, _topPoint.x - (mapData.cellRows * mapData.cellWidth >> 1), _topPoint.y, mapWidth, mapHeight, 0xffffff, false);
 					GraphicsUtil.drawDiamondNet(this._netLayer.graphics, new Point(), 0, 0, mapData.cellRows,mapData.cellCols, mapData.cellWidth, 0xff0000, false);
+					
+					// 初始化floorList
+					this._floorList.length = 0;
+					for(var row:int = 0; row < mapData.cellRows; row++){
+						_floorList[row] = new Vector.<FloorTile>();
+						for(var col:int = 0; col < mapData.cellCols; col++){
+							if(mapData.mapArr[row][col] == 1){
+								var f:FloorTile = new FloorTile(row, col);
+								_floorLayer.addChild(f);
+								_floorList[row][col] = f;
+							}else{
+								_floorList[row][col] = null;	
+							}
+						}
+					}
 				}
 			}
 			
@@ -43,7 +62,15 @@
 			}
 			
 			private function onClicked(evt:MouseEvent):void{
-				trace(Display45Util.getItemIndex(new Point(evt.localX, evt.localY)));
+				var p:Point = Display45Util.getItemIndex(new Point(evt.localX, evt.localY));
+				if(p.x >= 0 && p.y >= 0 && p.x < _mapData.cellCols && p.y < _mapData.cellRows){
+					if(!_floorList[p.y][p.x]){
+						var f:FloorTile = new FloorTile(p.y, p.x);
+						_floorLayer.addChild(f);
+						_floorList[p.y][p.x] = f;
+						_mapData.mapArr[p.y][p.x] = 1;
+					}
+				}
 			}
 			
 			protected function onCreationCompleted(event:FlexEvent):void
@@ -51,14 +78,39 @@
 				_topPoint.y = 150;
 			}
 			
+			protected function onCanMoveClicked(event:MouseEvent):void
+			{
+				
+			}
+			
+			protected function onCanNotMoveClicked(event:MouseEvent):void
+			{
+				
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
+		<s:RadioButtonGroup id="radiogroup1"/>
 		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
 	</fx:Declarations>
-	<s:Scroller width="100%" height="100%" horizontalScrollPolicy="on" verticalScrollPolicy="on">
+	<s:Group width="100%" height="26">
+		<s:Rect width="100%" height="100%">
+			<s:stroke>
+				<s:SolidColorStroke color="0" weight="1"/>
+			</s:stroke>
+		</s:Rect>
+		<s:HGroup width="100%" height="100%" paddingLeft="6" verticalAlign="middle">
+			<s:RadioButton label="可行走" click="onCanMoveClicked(event)"
+						   groupName="radiogroup1" selected="true"/>
+			<s:RadioButton label="不可行走" click="onCanNotMoveClicked(event)"
+						   groupName="radiogroup1"/>
+		</s:HGroup>
+	</s:Group>
+	<s:Scroller width="100%" height="100%">
 		<s:Group width="100%" height="100%">
-			<mx:UIComponent id="_netLayer" mouseEnabled="false" width="100%" height="100%"/>	
+			<mx:UIComponent id="_netLayer" mouseEnabled="false" width="100%" height="100%"/>
+			<mx:UIComponent id="_floorLayer" mouseEnabled="false" width="100%" height="100%"/>
 		</s:Group>
 	</s:Scroller>
-</s:Group>
+</s:VGroup>

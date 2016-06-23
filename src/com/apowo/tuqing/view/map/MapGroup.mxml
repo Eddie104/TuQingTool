@@ -34,6 +34,7 @@
 					GraphicsUtil.drawDiamondNet(this._netLayer.graphics, new Point(), 0, 0, mapData.cellRows,mapData.cellCols, mapData.cellWidth, 0xff0000, false);
 					
 					// 初始化floorList
+					_floorLayer.removeChildren();
 					this._floorList.length = 0;
 					for(var row:int = 0; row < mapData.cellRows; row++){
 						_floorList[row] = new Vector.<FloorTile>();
@@ -43,7 +44,7 @@
 								_floorLayer.addChild(f);
 								_floorList[row][col] = f;
 							}else{
-								_floorList[row][col] = null;	
+								_floorList[row][col] = null;
 							}
 						}
 					}

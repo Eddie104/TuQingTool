@@ -198,6 +198,9 @@
 				<menuitem label="打印"/>
 				<menuitem label="退出"/>
 			</menuitem>
+			<menuitem label="项目">
+				<menuitem label="导出Egret" />
+			</menuitem>
 			<menuitem label="编辑"/>
 			<menuitem label="查看"/>
 			<menuitem label="工具">

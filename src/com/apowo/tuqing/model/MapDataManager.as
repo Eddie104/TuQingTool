@@ -26,16 +26,18 @@ package com.apowo.tuqing.model
 		}
 		
 		private function readMapDataFromLocal():void{
-			var file:File = new File(ProjectManager.instance.curProjectData.path + File.separator + "mapDatas");
-			for each(var f:File in file.getDirectoryListing()){
-				var fs:FileStream = new FileStream();
-				fs.open(f, FileMode.READ);
-				var arrStr:String = fs.readUTFBytes(f.size);
-				fs.close();
-				
-				var jsonVal:Object = new JSONDecoder(arrStr).getValue();
-				var mapData:MapData = new MapData(jsonVal.name, jsonVal.cellWidth, jsonVal.cellRows, jsonVal.cellCols, jsonVal.mapArr);
-				_mapDataList.addItem(mapData);
+			if(ProjectManager.instance.curProjectData){
+				var file:File = new File(ProjectManager.instance.curProjectData.path + File.separator + "mapDatas");
+				for each(var f:File in file.getDirectoryListing()){
+					var fs:FileStream = new FileStream();
+					fs.open(f, FileMode.READ);
+					var arrStr:String = fs.readUTFBytes(f.size);
+					fs.close();
+					
+					var jsonVal:Object = new JSONDecoder(arrStr).getValue();
+					var mapData:MapData = new MapData(jsonVal.name, jsonVal.cellWidth, jsonVal.cellRows, jsonVal.cellCols, jsonVal.mapArr);
+					_mapDataList.addItem(mapData);
+				}
 			}
 		}
 		

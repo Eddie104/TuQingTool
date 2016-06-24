@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="28" creationComplete="onCreationCompleted(event)" xmlns:map="com.apowo.tuqing.view.map.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			private var _operatorDataList:ArrayCollection;
+			
+			private var _mapOperarotGroup:MapOperatorGroup;
+			
+			private var _furnitureOperarotGroup:FurnitureOperatorGroup;
+			
+			protected function onCreationCompleted(event:FlexEvent):void
+			{
+				_operatorDataList = new ArrayCollection(["编辑地图", "编辑家具"]);
+				_operatorComboBox.selectedIndex = 0;
+				
+				_mapOperarotGroup = new MapOperatorGroup();
+				_furnitureOperarotGroup = new FurnitureOperatorGroup();
+				
+				_mapOperarotGroup.addEventListener(MapToolBarEvent.MAP_TOOL_BAR_EVENT, onMapToolBarEvent);
+				
+				_operatorGroup.addElement(_mapOperarotGroup);
+			}
+			
+			private function onMapToolBarEvent(evt:MapToolBarEvent):void{
+				switch(evt.subType){
+					case MapToolBarEvent.MAP_CAN_MOVE:
+					case MapToolBarEvent.MAP_CAN_NOT_MOVE:
+						this.dispatchEvent(new MapToolBarEvent(MapToolBarEvent.MAP_OPERATOR, _mapOperarotGroup.curOperator));
+						break;
+				}
+			}
+			
+			private function onOperatorComboBoxChanged(evt:Event):void{
+				switch(_operatorComboBox.selectedIndex){
+					case 0:
+						if(_operatorGroup == _furnitureOperarotGroup.parent)
+							_operatorGroup.removeElement(_furnitureOperarotGroup);
+						_operatorGroup.addElement(_mapOperarotGroup);
+						this.dispatchEvent(new MapToolBarEvent(MapToolBarEvent.MAP_OPERATOR, _mapOperarotGroup.curOperator));
+						break;
+					case 1:
+						if(_operatorGroup == _mapOperarotGroup.parent)
+						_operatorGroup.removeElement(_mapOperarotGroup);
+						_operatorGroup.addElement(_furnitureOperarotGroup);
+						this.dispatchEvent(new MapToolBarEvent(MapToolBarEvent.FURNITURE_OPERATOR));
+						break;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Rect width="100%" height="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="0" weight="1"/>
+		</s:stroke>
+	</s:Rect>
+	<s:HGroup id="_operatorGroup" width="100%" height="100%" paddingLeft="0" verticalAlign="middle">
+		<s:ComboBox id="_operatorComboBox" width="80" height="26"
+					change="onOperatorComboBoxChanged(event)" dataProvider="{_operatorDataList}"
+					initialize="_operatorComboBox.textInput.editable=false" selectedIndex="0"/>
+		<!-- <map:MapOperatorGroup id="_mapOperarotGroup"/> -->
+	</s:HGroup>
+</s:Group>

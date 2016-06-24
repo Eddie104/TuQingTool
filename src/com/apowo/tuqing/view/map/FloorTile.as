@@ -2,14 +2,13 @@ package com.apowo.tuqing.view.map
 {
 	import com.apowo.tuqing.model.ProjectManager;
 	
+	import flash.display.Shape;
 	import flash.geom.Point;
-	
-	import mx.core.UIComponent;
 	
 	import org.libra.utils.displayObject.Display45Util;
 	import org.libra.utils.displayObject.GraphicsUtil;
 	
-	public final class FloorTile extends UIComponent
+	public final class FloorTile extends Shape
 	{
 		public function FloorTile(row:int, col:int)
 		{

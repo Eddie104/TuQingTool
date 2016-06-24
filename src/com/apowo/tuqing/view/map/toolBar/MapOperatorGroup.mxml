@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="26" verticalAlign="middle" creationComplete="onCreationCompleted(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			private var _curOperator:String;
+			
+			public function get curOperator():String
+			{
+				return _curOperator;
+			}
+
+			protected function onCanMoveClicked(event:MouseEvent):void
+			{
+				_curOperator = MapToolBarEvent.MAP_CAN_MOVE;
+				this.dispatchEvent(new MapToolBarEvent(_curOperator));
+			}
+			
+			protected function onCanNotMoveClicked(event:MouseEvent):void
+			{
+				_curOperator = MapToolBarEvent.MAP_CAN_NOT_MOVE;
+				this.dispatchEvent(new MapToolBarEvent(_curOperator));
+			}
+			
+			protected function onCreationCompleted(event:FlexEvent):void
+			{
+				_curOperator = MapToolBarEvent.MAP_CAN_MOVE;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:RadioButton label="可行走" click="onCanMoveClicked(event)"
+				   groupName="radiogroup1" selected="true"/>
+	<s:RadioButton label="不可行走" click="onCanNotMoveClicked(event)"
+				   groupName="radiogroup1"/>
+</s:HGroup>

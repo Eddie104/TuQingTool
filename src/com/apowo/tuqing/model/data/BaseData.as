@@ -46,6 +46,10 @@ package com.apowo.tuqing.model.data
 		public function toString():String{
 			return _name;
 		}
+		
+		public function saveToLocal():Boolean{
+			return false;
+		}
 
 	}
 }

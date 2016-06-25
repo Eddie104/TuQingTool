@@ -15,6 +15,7 @@
 			import com.apowo.tuqing.events.MapEvent;
 			import com.apowo.tuqing.events.ProjectEvent;
 			import com.apowo.tuqing.events.ProjectTreeEvent;
+			import com.apowo.tuqing.model.FurnitureManager;
 			import com.apowo.tuqing.model.MapDataManager;
 			import com.apowo.tuqing.model.ProjectManager;
 			import com.apowo.tuqing.model.data.BaseData;
@@ -23,7 +24,9 @@
 			import com.apowo.tuqing.model.data.project.FileNode;
 			import com.apowo.tuqing.model.data.project.ProjectData;
 			import com.apowo.tuqing.view.about.AboutWindown;
+			import com.apowo.tuqing.view.config.ConfigGroup;
 			import com.apowo.tuqing.view.furniture.FurnitureEditor;
+			import com.apowo.tuqing.view.map.MapGroup;
 			import com.apowo.tuqing.view.map.NewMapWindow;
 			import com.apowo.tuqing.view.project.NewProjectWindow;
 			import com.as3xls.xls.formula.Functions;
@@ -40,6 +43,12 @@
 			
 			private var _keyPoll:KeyPoll;
 			
+			private var _mapGroup:MapGroup;
+			
+			private var _configGroup:ConfigGroup;
+			
+			private var _curGroup:Group;
+			
 			protected function munuItemClickHandler(event:MenuEvent):void {
 				if(event.label == "家具编辑器") {
 					Alert.show("您单击的是家具编辑器按钮"); 
@@ -53,6 +62,12 @@
 			}
 			
 			protected function onCreationCompleteHandler(event:FlexEvent):void {
+				_mapGroup = new MapGroup();
+				_configGroup = new ConfigGroup();
+				
+				_curGroup = _mapGroup;
+				this._contentGroup.addElement(_curGroup);
+				
 				_resourceGroup.addEventListener(MapEvent.MAP_EVENT, onMapEvent);
 				_resourceGroup.addEventListener(ProjectEvent.PROJECT_EVENT, onProjectEvent);
 				_resourceGroup.addEventListener(ProjectTreeEvent.PROJECT_TREE_EVENT, onProjectTreeEvent);
@@ -98,7 +113,20 @@
 							var fileNode:FileNode = item as FileNode;
 							switch(fileNode.file.extension){
 								case "map":
+									if(_curGroup != _mapGroup){
+										_contentGroup.removeAllElements();
+										_curGroup = _mapGroup;
+										_contentGroup.addElement(_curGroup);
+									}
 									_mapGroup.drawMap(MapDataManager.instance.setCurMapData(fileNode.name));									
+									break;
+								case "csv":
+									if(_curGroup != _configGroup){
+										_contentGroup.removeAllElements();
+										_curGroup = _configGroup;
+										_contentGroup.addElement(_curGroup);
+									}
+									_configGroup.drawConfig(fileNode.name);
 									break;
 							}
 						}
@@ -111,12 +139,19 @@
 					case FurnitureEvent.EDIT_FURNITURE:
 						var win:FurnitureEditor = new FurnitureEditor();
 						win.furnitureData = evt.data as FurnitureData;
+						win.addEventListener(Event.CLOSING, onFurnitureEditorClosing);
 						PopUpUtil.instance.addPopUp(win, this, true, 1);
 						break;
 					case FurnitureEvent.SELECT_FURNITURE:
 						_propertiesGroup.data = evt.data as BaseData;
 						break;
 				}
+			}
+			
+			private function onFurnitureEditorClosing(evt:Event):void{
+				var win:FurnitureEditor = evt.target as FurnitureEditor;
+				win.removeEventListener(Event.CLOSING, onFurnitureEditorClosing);
+				_mapGroup.resetTopPoint();
 			}
 			
 			protected function onAddedToStageHandler(event:Event):void {
@@ -173,6 +208,7 @@
 			{
 				MapDataManager.instance.saveMapDataToLocal();
 				ProjectManager.instance.saveProjectDataToLocal();
+				FurnitureManager.instance.saveMapData();
 			}
 			
 			protected function onActivateHandler(event:Event):void
@@ -224,9 +260,7 @@
 			<s:Group width="15%" height="100%" minWidth="200">
 				<project:ResourceGroup id="_resourceGroup" width="100%" height="100%"/>
 			</s:Group>
-			<s:Group width="65%" height="100%">
-				<map:MapGroup id="_mapGroup" width="100%" height="100%"/>
-			</s:Group>
+			<s:Group id="_contentGroup" width="65%" height="100%" />
 			<s:Group width="20%" height="100%">
 				<map:PropertiesGroup id="_propertiesGroup" width="100%" height="100%"/>
 			</s:Group>

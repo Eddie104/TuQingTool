@@ -7,10 +7,8 @@ package com.apowo.tuqing.model.data
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 
-	public final class MapData
+	public final class MapData extends BaseData
 	{
-		
-		private var _name:String;
 		
 		private var _cellWidth:int;
 		
@@ -72,16 +70,6 @@ package com.apowo.tuqing.model.data
 		{
 			_cellWidth = value;
 		}
-
-		public function get name():String
-		{
-			return _name;
-		}
-
-		public function set name(value:String):void
-		{
-			_name = value;
-		}
 		
 		public function get mapArr():Array{
 			return _mapArr;
@@ -97,16 +85,13 @@ package com.apowo.tuqing.model.data
 		public function getHeight():int{
 			return (this._cellCols + this._cellRows) * _cellWidth >> 2;
 		}
-		
-		public function toString():String{
-			return this._name;
-		}
+	
 		
 		public function toJson():String{
 			return new JSONEncoder(this).getString();
 		}
 		
-		public function saveToLocal():Boolean{
+		public override function saveToLocal():Boolean{
 			var result:Boolean = true;
 			try{
 				var file:File = new File(ProjectManager.instance.curProjectData.path + File.separator + "mapDatas" + File.separator + _name + ".map");

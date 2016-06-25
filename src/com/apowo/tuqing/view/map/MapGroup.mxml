@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" creationComplete="onCreationCompleted(event)" addedToStage="onAddedToStage(event)" xmlns:map="com.apowo.tuqing.view.map.*" xmlns:toolBar="com.apowo.tuqing.view.map.toolBar.*">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" creationComplete="onCreationCompleted(event)" addedToStage="onAddedToStage(event)" xmlns:map="com.apowo.tuqing.view.map.*" xmlns:toolBar="com.apowo.tuqing.view.map.toolBar.*">
 	<fx:Script>
 		<![CDATA[
 			import com.apowo.tuqing.model.data.MapData;
@@ -47,6 +47,10 @@
 					
 					_floorLayer.reset(_mapData);
 				}
+			}
+			
+			public function resetTopPoint():void{
+				Display45Util.setTopPoint(_topPoint);
 			}
 			
 			protected function onAddedToStage(event:Event):void
@@ -116,7 +120,7 @@
 			
 			private function onMapToolBarEvent(evt:MapToolBarEvent):void{
 				_mainOperator = evt.subType;
-				_subOperator = evt.data.toString();
+				_subOperator = evt.data ? evt.data.toString() : null;
 //				switch(_mainOperator){
 //					case MapToolBarEvent.MAP_OPERATOR:
 //						

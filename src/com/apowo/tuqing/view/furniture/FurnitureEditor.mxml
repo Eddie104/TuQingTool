@@ -13,7 +13,6 @@
 			import com.apowo.tuqing.model.ProjectManager;
 			import com.apowo.tuqing.model.data.FurnitureData;
 			
-			import mx.core.ITextInput;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			
@@ -24,9 +23,12 @@
 			
 			import spark.components.TextInput;
 			
-			private var _furnitureData:FurnitureData;
-			
 			public static var topPoint:Point = new Point(0, 20);
+			
+			private static const NET_ROWS:int = 10;
+			private static const NET_COLS:int = 10;
+			
+			private var _furnitureData:FurnitureData;
 			
 			private var _isDraging:Boolean;
 			
@@ -35,6 +37,11 @@
 			private var _lastDragY:Number;
 			
 			private var _furniture:Furniture;
+			
+			/**
+			 * 所有占位网格的集合
+			 */
+			private var _subfaceNetList:Vector.<Vector.<SubfaceNet>> = new Vector.<Vector.<SubfaceNet>>();
 			
 			/**
 			 * 当前的操作 
@@ -78,15 +85,13 @@
 				_furnitureGroup.graphics.beginFill(0xff00ff, 0);
 				_furnitureGroup.graphics.drawRect(0, 0, _furnitureGroup.width, _furnitureGroup.height);
 				_furnitureGroup.graphics.endFill();
-				GraphicsUtil.drawDiamondNet(_furnitureGroup.graphics, new Point(), 0, 0, 10, 10, width, 0xff0000, false);
+				GraphicsUtil.drawDiamondNet(_furnitureGroup.graphics, new Point(), 0, 0, NET_ROWS, NET_COLS, width, 0xff0000, false);
 				
 				_furniture = new Furniture();
 				_furnitureGroup.addElement(_furniture);
 				
-				_furniture.data = _furnitureData;
-				_furniture.x = topPoint.x - _furnitureData.offsetX;
-				_furniture.y = topPoint.y - _furnitureData.offsetY;
-
+				setFurntiureData(_furnitureData);
+				
 				_furniture.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
 				this.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				this.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -98,10 +103,43 @@
 			private function onFurnitureListEvent(evt:FurnitureEvent):void{
 				switch(evt.subType){
 					case FurnitureEvent.SELECT_FURNITURE:
-						_furniture.data = evt.data as FurnitureData;
-						_furniture.x = topPoint.x - _furniture.data.offsetX;
-						_furniture.y = topPoint.y - _furniture.data.offsetY;
+						setFurntiureData(evt.data as FurnitureData)
 						break;
+				}
+			}
+			
+			private function setFurntiureData(data:FurnitureData):void{
+				_furniture.data = data;
+				_furniture.x = topPoint.x - data.offsetX;
+				_furniture.y = topPoint.y - data.offsetY;
+				for(var i:int = 0; i < _subfaceNetList.length; i++){
+					for each(var net:SubfaceNet in _subfaceNetList[i]){
+						if(net){
+							_subfaceNetContainer.removeChild(net);
+						}
+					}
+				}
+				
+				var arr:Vector.<Vector.<int>> = data.getSubfaceArr();
+				var hasNet:Boolean = false;
+				// 初始化占位格子的集合
+				for(var row:int = 0; row < NET_ROWS; row++){
+					_subfaceNetList[row] = new Vector.<SubfaceNet>();
+					for(var col:int = 0; col < NET_COLS; col++){
+						hasNet = false;
+						if(row < arr.length){
+							if(col < arr[row].length){
+								hasNet = arr[row][col] == 1;
+							}
+						}
+						if(hasNet){
+							net = new SubfaceNet(row, col);
+							_subfaceNetContainer.addChild(net);
+						}else{
+							net = null;
+						}
+						_subfaceNetList[row][col] = net;
+					}
 				}
 			}
 			
@@ -116,10 +154,20 @@
 			private function onMouseUp(evt:MouseEvent):void{
 				_isDraging = false;
 				if(_curOperation == ToolBarEvent.SUB_FACE){
-					trace(evt.localX, evt.localY);
-					
 					var p:Point = Display45Util.getItemIndex(new Point(evt.localX, evt.localY));
-					trace(p);
+					if(p.x >= 0 && p.x < NET_ROWS && p.y >= 0 && p.y < NET_COLS){
+						// 占位
+						if(_subfaceNetList[p.y][p.x]){
+							_subfaceNetContainer.removeChild(_subfaceNetList[p.y][p.x]);
+							_subfaceNetList[p.y][p.x] = null;
+							_furniture.data.setSubfaceArr(p.y, p.x, false);
+						}else{
+							var net:SubfaceNet = new SubfaceNet(p.y, p.x);
+							_subfaceNetContainer.addChild(net);
+							_subfaceNetList[p.y][p.x] = net;
+							_furniture.data.setSubfaceArr(p.y, p.x, true);
+						}
+					}
 				}
 			}
 			
@@ -178,7 +226,15 @@
 			
 			private function onToolBarEvent(evt:ToolBarEvent):void{
 				_curOperation = evt.subType;
-				_furniture.mouseEnabled = _curOperation == ToolBarEvent.MOVE;
+				if(_curOperation == ToolBarEvent.MOVE){
+					_furniture.mouseEnabled = true;
+					_furniture.alpha = 1.0;
+					_subfaceNetContainer.visible = false;
+				}else{
+					_furniture.mouseEnabled = false;
+					_furniture.alpha = 0.5;
+					_subfaceNetContainer.visible = true;
+				}
 			}
 			
 		]]>
@@ -190,7 +246,9 @@
 		<project:FurnitureList id="_listGroup" width="160" height="100%"/>
 		<s:VGroup width="100%" height="100%">
 			<furniture:ToolBar id="_toolBar" width="100%" height="26"/>
-			<s:Group id="_furnitureGroup" width="100%" height="260" />
+			<s:Group id="_furnitureGroup" width="100%" height="260">
+				<mx:UIComponent id="_subfaceNetContainer" width="100%" height="100%" visible="false"/>
+			</s:Group>
 			<s:VGroup width="100%" height="100%">
 				
 			</s:VGroup>

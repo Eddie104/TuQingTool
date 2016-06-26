@@ -98,44 +98,50 @@ package com.apowo.tuqing.model
 //				
 //			}
 			var p:ProjectData = ProjectManager.instance.curProjectData;
-			var configPath:String = p.path + File.separator + "config" + File.separator + "furniture.csv";
-			
-			var f:File = new File(configPath);
-			var fs:FileStream = new FileStream();
-			fs.open(f, FileMode.READ);
-			var csvStr:String = fs.readMultiByte(fs.bytesAvailable, "GBK");
-			fs.close();
-			var csv:CSV = new CSV(csvStr);
-			
-			var offsetXIndex:int = 0;
-			var offsetYIndex:int = 0;
-			for(var i:int = 0;i < csv.header.length; i++){
-				if(csv.header[i] == "OffsetX"){
-					offsetXIndex = i;					
-				}else if(csv.header[i] == "OffsetY"){
-					offsetYIndex = i;
-				}
-			}
-
-			function updateCSV(furnitureData:FurnitureData):void{
-				for(var j:int = 3; j < csv.data.length; j++){
-					if(csv.data[j][0] == furnitureData.type){
-						csv.data[j][offsetXIndex] = furnitureData.offsetX;
-						csv.data[j][offsetYIndex] = furnitureData.offsetY;
-						return;
+			if(p){
+				var configPath:String = p.path + File.separator + "config" + File.separator + "furniture.csv";
+				
+				var f:File = new File(configPath);
+				var fs:FileStream = new FileStream();
+				fs.open(f, FileMode.READ);
+				var csvStr:String = fs.readMultiByte(fs.bytesAvailable, "GBK");
+				fs.close();
+				var csv:CSV = new CSV(csvStr);
+				
+				var offsetXIndex:int = 0;
+				var offsetYIndex:int = 0;
+				var subfaceIndex:int = 0;
+				for(var i:int = 0;i < csv.header.length; i++){
+					if(csv.header[i] == "OffsetX"){
+						offsetXIndex = i;					
+					}else if(csv.header[i] == "OffsetY"){
+						offsetYIndex = i;
+					}else if(csv.header[i] == "Subface"){
+						subfaceIndex = i;
 					}
-				}				
+				}
+				
+				function updateCSV(furnitureData:FurnitureData):void{
+					for(var j:int = 3; j < csv.data.length; j++){
+						if(csv.data[j][0] == furnitureData.type){
+							csv.data[j][offsetXIndex] = furnitureData.offsetX;
+							csv.data[j][offsetYIndex] = furnitureData.offsetY;
+							csv.data[j][subfaceIndex] = furnitureData.subface;
+							return;
+						}
+					}				
+				}
+				
+				for(i = 0; i < _furnitureDataList.length; i++){
+					updateCSV(_furnitureDataList[i]);
+				}
+				csv.encode();
+				
+				fs = new FileStream();
+				fs.open(f, FileMode.WRITE);
+				fs.writeMultiByte(csv.csvString, "GBK");
+				fs.close();					
 			}
-			
-			for(i = 0; i < _furnitureDataList.length; i++){
-				updateCSV(_furnitureDataList[i]);
-			}
-			csv.encode();
-			
-			fs = new FileStream();
-			fs.open(f, FileMode.WRITE);
-			fs.writeMultiByte(csv.csvString, "GBK");
-			fs.close();	
 		}
 		
 		public static function get instance():FurnitureManager{

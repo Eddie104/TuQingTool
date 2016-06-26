@@ -22,7 +22,6 @@ package com.apowo.tuqing.view.furniture
 		public function Furniture()
 		{
 			super();
-			this.alpha = .5;
 			_bitmap = new Bitmap();
 			this.addChild(_bitmap);
 			

@@ -18,8 +18,15 @@ package com.apowo.tuqing.view.furniture
 		{
 			super();
 			
+			var cellWidth:int = ProjectManager.instance.curProjectData.cellWidth;
 			var topPoint:Point = Display45Util.getTopPoint();
-			GraphicsUtil.drawDiamondNet(this.graphics, new Point(0 - topPoint.x, 0 - topPoint.y), 0, 0, 1, 1, ProjectManager.instance.curProjectData.cellWidth, 0x000000, false);
+			this.graphics.lineStyle(1, 0x000000);
+			this.graphics.moveTo(0, 0);
+			this.graphics.lineTo(0, cellWidth >> 1);
+			this.graphics.moveTo(-cellWidth >> 1, cellWidth >> 2);
+			this.graphics.lineTo(cellWidth >> 1, cellWidth >> 2);
+			
+			GraphicsUtil.drawDiamondNet(this.graphics, new Point(0 - topPoint.x, 0 - topPoint.y), 0, 0, 1, 1, cellWidth, 0x000000, false);
 			var p:Point = Display45Util.getItemPos(row, col);
 			this.x = p.x;
 			this.y = p.y;

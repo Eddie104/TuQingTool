@@ -33,7 +33,7 @@
 						if(path == ""){
 							Alert.show("请选择项目路径", "ERROR");
 						} else {
-							ProjectManager.instance.createNewProject(name, path + File.separator + name, cellWidth);
+							ProjectManager.instance.createNewProject(name, path + File.separator + name, "", cellWidth);
 							onCloseHandler();	
 						}
 					}else{

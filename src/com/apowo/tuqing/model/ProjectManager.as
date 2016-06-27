@@ -45,7 +45,7 @@ package com.apowo.tuqing.model
 				var projectDataJson:Object = null;
 				for(var i:int = 0; i < projectDataJsonArray.length; i++){
 					projectDataJson = projectDataJsonArray[i];
-					createNewProject(projectDataJson.name, projectDataJson.path.replace(/\//g, '\\'), projectDataJson.cellWidth);
+					createNewProject(projectDataJson.name, projectDataJson.path.replace(/\//g, '\\'), projectDataJson.egretPath ? projectDataJson.egretPath.replace(/\//g, '\\') : "", projectDataJson.cellWidth);
 				}
 			}
 		}
@@ -55,7 +55,7 @@ package com.apowo.tuqing.model
 			var jsonStr:String = '[';
 			for(var i:int = 0; i < projectDataList.length; i++){
 				projectData = projectDataList[i];
-				jsonStr += '{"name":"' +  projectData.name + '","path":"' + projectData.path.replace(/\\/g, '/') + '","cellWidth":' + projectData.cellWidth + '}' + (i == projectDataList.length - 1 ? "" : ",");
+				jsonStr += '{"name":"' +  projectData.name + '","path":"' + projectData.path.replace(/\\/g, '/') + '","cellWidth":' + projectData.cellWidth + ',"egretPath":"' + projectData.egretPath.replace(/\\/g, '/') + '"}' + (i == projectDataList.length - 1 ? "" : ",");
 			}
 			jsonStr += "]";
 			
@@ -66,7 +66,7 @@ package com.apowo.tuqing.model
 			fs.close();
 		}
 		
-		public function createNewProject(name:String, path:String, cellWidth:int):ProjectData{
+		public function createNewProject(name:String, path:String, egretPath:String, cellWidth:int):ProjectData{
 			// 创建配置文件的路径
 			var configDirPath:String = path + File.separator + "config";
 			var f:File = new File(configDirPath);
@@ -95,7 +95,7 @@ package com.apowo.tuqing.model
 				f.createDirectory();
 			}
 			
-			var p:ProjectData = new ProjectData(name, path, cellWidth);
+			var p:ProjectData = new ProjectData(name, path, egretPath, cellWidth);
 			projectDataList.addItem(p);
 			return p;
 		}

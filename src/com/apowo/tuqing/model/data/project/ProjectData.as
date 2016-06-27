@@ -10,6 +10,8 @@ package com.apowo.tuqing.model.data.project
 		
 		private var _name:String;
 		
+		private var _egretPath:String = "";
+		
 		private var _path:String;
 		
 		private var _cellWidth:int;
@@ -22,10 +24,11 @@ package com.apowo.tuqing.model.data.project
 		
 		private var _mapDataCollection:MapDataCollection;
 		
-		public function ProjectData(name:String, path:String, cellWidth:int)
+		public function ProjectData(name:String, path:String, egretPath:String, cellWidth:int)
 		{
 			_name = name;
 			_path = path;
+			_egretPath = egretPath;
 			_cellWidth = cellWidth;
 			
 			_configCollection = new ConfigCollection(path);
@@ -36,6 +39,16 @@ package com.apowo.tuqing.model.data.project
 			
 			_mapDataCollection = new MapDataCollection(path);
 			children.addItem(_mapDataCollection);
+		}
+
+		public function get egretPath():String
+		{
+			return _egretPath;
+		}
+
+		public function set egretPath(value:String):void
+		{
+			_egretPath = value;
 		}
 
 		public function get cellWidth():int
@@ -76,5 +89,10 @@ package com.apowo.tuqing.model.data.project
 			this._mapDataCollection.refresh();
 		}
 		
+		// 导出egret项目
+		public function exportEgret():Boolean{
+			
+			return true;
+		}
 	}
 }

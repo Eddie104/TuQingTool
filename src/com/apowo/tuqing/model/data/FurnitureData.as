@@ -81,7 +81,7 @@ package com.apowo.tuqing.model.data
 		}
 		
 		public function getUrl():String{
-			return ProjectManager.instance.curProjectData.path + File.separator + "assets" + File.separator + "furniture" + File.separator + _asset;
+			return ProjectManager.instance.curProjectData.path + File.separator + "assets" + File.separator + "furniture" + File.separator + _asset + ".png";
 		}
 		
 		public function getSubfaceArr():Vector.<Vector.<int>>{

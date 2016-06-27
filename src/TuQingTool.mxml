@@ -28,6 +28,7 @@
 			import com.apowo.tuqing.view.furniture.FurnitureEditor;
 			import com.apowo.tuqing.view.map.MapGroup;
 			import com.apowo.tuqing.view.map.NewMapWindow;
+			import com.apowo.tuqing.view.project.ExportProjectWin;
 			import com.apowo.tuqing.view.project.NewProjectWindow;
 			import com.as3xls.xls.formula.Functions;
 			
@@ -58,7 +59,31 @@
 					
 				} else if(event.label == "新建项目") {
 					newProject();
+				} else if(event.label == "导出Egret"){
+					var p:ProjectData = ProjectManager.instance.curProjectData;
+					if(p){
+						if(p.egretPath != ""){
+							onExport();
+						}else{
+							var win:ExportProjectWin = new ExportProjectWin();
+							win.addEventListener(ExportProjectWin.EXPORT, onExport);
+							PopUpUtil.instance.addPopUp(win, this, true, 1);
+						}
+					}else{
+						Alert.show("请选中要导出的项目");
+					}
 				}
+			}
+			
+			private function onExport(evt:DataEvent = null):void{
+				var p:ProjectData = ProjectManager.instance.curProjectData;
+				if(evt){
+					p.egretPath = evt.data;
+					var win:ExportProjectWin = evt.target as ExportProjectWin;
+					win.removeEventListener(ExportProjectWin.EXPORT, onExport);
+				}
+				
+				p.exportEgret();
 			}
 			
 			protected function onCreationCompleteHandler(event:FlexEvent):void {

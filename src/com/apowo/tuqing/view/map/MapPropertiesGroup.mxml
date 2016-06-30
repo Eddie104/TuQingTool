@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" creationComplete="onCreationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.model.MapDataManager;
+			import com.apowo.tuqing.model.data.LocalMapData;
+			import com.apowo.tuqing.model.data.MapData;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private var _localMapData:LocalMapData;
+			
+			
+			public function get mapData():LocalMapData
+			{
+				return _localMapData;
+			}
+
+			public function set mapData(value:LocalMapData):void
+			{
+				if(_localMapData != value){
+					_localMapData = value;
+					_mapDataNameLabel.text = _localMapData.name;
+					_mapDataRowsLabel.text = _localMapData.cellRows.toString();
+					_mapDataColsLabel.text = _localMapData.cellCols.toString();
+					if(_localMapData.type > 0){
+						for(var i:int = 0; i < MapDataManager.instance.mapDataList.length; i++){
+							if(MapDataManager.instance.mapDataList[i].type == _localMapData.type){
+								_mapDataComboBox.selectedIndex = i;
+								break;
+							}
+						}
+					}else{
+						_mapDataComboBox.selectedIndex = -1;
+					}					
+				}
+			}
+
+			protected function onCreationCompleteHandler(event:FlexEvent):void
+			{
+			}
+			
+			protected function onMapDataChanged(event:IndexChangeEvent):void
+			{
+				var manager:MapDataManager = MapDataManager.instance;
+				var mapData:MapData = manager.mapDataList[event.newIndex];
+				
+				for(var i:int = 0; i < manager.localMapDataList.length; i++){
+					if(manager.localMapDataList[i].type == mapData.type){
+						Alert.show(mapData.name + "的地图数据已经被" + manager.localMapDataList[i].name + "赋值了");
+						return;
+					}
+				}
+				
+				mapData.setMapDataArr(manager.curLocalMapData.mapArr);
+				manager.curLocalMapData.type = mapData.type;
+				
+				if(event.oldIndex != -1){
+					manager.mapDataList[event.oldIndex].setMapDataArr(null);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:HGroup width="100%" height="26" paddingLeft="6" verticalAlign="middle">
+		<s:Label text="地图名称" verticalAlign="middle"/>
+		<s:Label id="_mapDataNameLabel" width="100%" verticalAlign="middle"/>
+	</s:HGroup>
+	<s:HGroup width="100%" height="26" paddingLeft="6" verticalAlign="middle">
+		<s:Label text="地图行数" verticalAlign="middle"/>
+		<s:Label id="_mapDataRowsLabel" width="100%" verticalAlign="middle"/>
+	</s:HGroup>
+	<s:HGroup width="100%" height="26" paddingLeft="6" verticalAlign="middle">
+		<s:Label text="地图列数" verticalAlign="middle"/>
+		<s:Label id="_mapDataColsLabel" width="100%" verticalAlign="middle"/>
+	</s:HGroup>
+	<s:HGroup width="100%" height="26" paddingLeft="6" verticalAlign="middle">
+		<s:Label text="配置地图" verticalAlign="middle"/>
+		<s:ComboBox id="_mapDataComboBox" dataProvider="{MapDataManager.instance.mapDataList}" change="onMapDataChanged(event)" initialize="_mapDataComboBox.textInput.editable=false"/>
+	</s:HGroup>
+</s:VGroup>

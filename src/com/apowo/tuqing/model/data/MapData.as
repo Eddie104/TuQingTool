@@ -1,108 +1,68 @@
 package com.apowo.tuqing.model.data
 {
-	import com.adobe.serialization.json.JSONEncoder;
-	import com.apowo.tuqing.model.ProjectManager;
-	
-	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
-
 	public final class MapData extends BaseData
 	{
 		
-		private var _cellWidth:int;
+		private var _mapData:String;
 		
-		private var _cellRows:int;
+		private var _mapDataArr:Vector.<Vector.<int>> = new Vector.<Vector.<int>>();
 		
-		private var _cellCols:int;
-		
-		/**
-		 * 地图数据
-		 */
-		private var _mapArr:Array;
-		
-		public function MapData(name:String, cellWidth:int, cellRows:int, cellCols:int, mapArr:Array = null)
+		public function MapData()
 		{
-			_name = name;
-			_cellWidth = cellWidth;
-			_cellRows = cellRows;
-			_cellCols = cellCols;
+			super();
+		}
+
+		public function get mapData():String
+		{
+			return _mapData;
+		}
+
+		public function set mapData(value:String):void
+		{
+			_mapData = value;
 			
-			if(!mapArr){
-				_mapArr = [];
-				for(var row:int = 0; row < cellRows; row++){
-					_mapArr[row] = [];
-					for(var col:int = 0; col < cellCols; col++){
-						_mapArr[row][col] = 0;
-					}
-				}	
+			_mapDataArr.length = 0;
+			if(_mapData == ""){
+				_mapDataArr[0] = new Vector.<int>();				
 			}else{
-				_mapArr = mapArr;
+				var rows:Array = _mapData.split("|");
+				var cols:Array = null;
+				for(var r:int = 0; r < rows.length; r++){
+					_mapDataArr[r] = new Vector.<int>();
+					cols = rows[r].split("&");
+					for(var c:int = 0; c < cols.length; c++){
+						_mapDataArr[r][c] = int(cols[c]);	
+					}
+				}
 			}
 		}
-
-		public function get cellCols():int
-		{
-			return _cellCols;
-		}
-
-		public function set cellCols(value:int):void
-		{
-			_cellCols = value;
-		}
-
-		public function get cellRows():int
-		{
-			return _cellRows;
-		}
-
-		public function set cellRows(value:int):void
-		{
-			_cellRows = value;
-		}
-
-		public function get cellWidth():int
-		{
-			return _cellWidth;
-		}
-
-		public function set cellWidth(value:int):void
-		{
-			_cellWidth = value;
-		}
 		
-		public function get mapArr():Array{
-			return _mapArr;
-		}
-		
-		/**
-		 * 算出地图的水平宽度
-		 */
-		public function getWidth():int{
-			return (this._cellCols + this._cellRows) * _cellWidth >> 1;
-		}
-		
-		public function getHeight():int{
-			return (this._cellCols + this._cellRows) * _cellWidth >> 2;
-		}
-	
-		
-		public function toJson():String{
-			return new JSONEncoder(this).getString();
-		}
-		
-		public override function saveToLocal():Boolean{
-			var result:Boolean = true;
-			try{
-				var file:File = new File(ProjectManager.instance.curProjectData.path + File.separator + "mapDatas" + File.separator + _name + ".map");
-				var fs:FileStream = new FileStream();
-				fs.open(file, FileMode.WRITE);
-				fs.writeUTFBytes(toJson());
-				fs.close();	
-			} catch(e:Error){
-				result = false;
+		public function setMapDataArr(arr:Array):void{
+			if(arr){
+				var a:Array = [];
+				for(var r:int = 0; r < arr.length; r++){
+					a[r] = arr[r].join("&");
+				}
+				mapData = a.join("|");	
+			}else{
+				mapData = '';
 			}
-			return result;
+		}
+		
+		public function updateMapDataArr(mapData:LocalMapData):void{
+			setMapDataArr(mapData ? mapData.mapArr : null);
+		}
+		
+		public function gfetMapDataArrStr():String{
+			var s:String = "[";
+			for(var i:int = 0; i < _mapDataArr.length; i++){
+				s += '[' + _mapDataArr[i].join(",") + ']';
+				if(i < _mapDataArr.length - 1){
+					s += ',';
+				}
+			}
+			s += ']';
+			return s;
 		}
 
 	}

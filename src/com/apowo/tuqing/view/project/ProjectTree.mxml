@@ -2,7 +2,7 @@
 <mx:Tree xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 change="onChangeHandler(event)" creationComplete="onCreationComplete(event)"
+		 change="onChangeHandler(event)" click="onChangeHandler(event)" creationComplete="onCreationComplete(event)"
 		 itemOpen="onItemOpenHandler(event)"
 		 dataProvider="{ProjectManager.instance.projectDataList}">
 	<fx:Script>
@@ -42,24 +42,6 @@
 				newMapItem.enabled = false;
 				contextMenu.addItem(newMapItem);
 				
-//				// 打开按钮
-//				var openMenuItem:NativeMenuItem = new NativeMenuItem("打开");
-//				openMenuItem.addEventListener(Event.SELECT, onOpenFile);
-//				contextMenu.addItem(openMenuItem);
-//				
-//				// 编辑按钮
-//				var editMenuItem:NativeMenuItem = new NativeMenuItem("编辑");
-//				editMenuItem.addEventListener(Event.SELECT, onEditFile);
-//				contextMenu.addItem(editMenuItem);
-//				
-//				// 分割线
-//				contextMenu.addItem(new NativeMenuItem(null, true));
-//				
-//				// 删除按钮
-//				var deleteMenuItem:NativeMenuItem = new NativeMenuItem("删除");
-//				deleteMenuItem.addEventListener(Event.SELECT, onDeleteFile);
-//				contextMenu.addItem(deleteMenuItem);
-				
 				this.contextMenu = contextMenu;
 			}
 			
@@ -75,7 +57,7 @@
 				this.dispatchEvent(new MapEvent(MapEvent.NEW_FILE));
 			}
 			
-			protected function onChangeHandler(event:ListEvent):void
+			protected function onChangeHandler(event:Event):void
 			{
 				if(this.selectedItem is ProjectData){
 					deleteProjectItem.enabled = true;

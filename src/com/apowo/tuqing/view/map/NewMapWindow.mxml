@@ -33,7 +33,7 @@
 						if(cellRows > 0){
 							var cellCols:int = int(_cellCols.text);
 							if(cellCols > 0){
-								MapDataManager.instance.createNewMapData(name, ProjectManager.instance.curProjectData.cellWidth, cellRows, cellCols);
+								MapDataManager.instance.createNewLocalMapData(name, ProjectManager.instance.curProjectData.cellWidth, cellRows, cellCols);
 								onCloseHandler();
 							}else{
 								Alert.show("请输入正确的格子列数", "ERROR");	

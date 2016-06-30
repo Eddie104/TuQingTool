@@ -7,10 +7,12 @@ package com.apowo.tuqing.view.furniture
 	
 	import flash.display.Bitmap;
 	import flash.events.Event;
+	import flash.geom.Point;
 	
 	import mx.core.UIComponent;
 	
 	import org.libra.displayObject.JSprite;
+	import org.libra.utils.displayObject.Display45Util;
 	
 	public final class Furniture extends UIComponent
 	{
@@ -18,6 +20,10 @@ package com.apowo.tuqing.view.furniture
 		private var _bitmap:Bitmap;
 		
 		private var _data:FurnitureData;
+		
+		private var _row:int;
+		
+		private var _col:int;
 		
 		public function Furniture()
 		{
@@ -37,6 +43,14 @@ package com.apowo.tuqing.view.furniture
 		{
 			_data = value;
 			_bitmap.bitmapData = BitmapDataPool.instance.getBmd(_data.getUrl());
+		}
+		
+		public function setRowAndCol(row:int, col:int):void{
+			_row = row;
+			_col = col;
+			var p:Point = Display45Util.getItemPos(row, col);
+			this.x = p.x;
+			this.y = p.y;
 		}
 		
 		/**

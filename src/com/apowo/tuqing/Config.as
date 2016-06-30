@@ -1,6 +1,6 @@
 package com.apowo.tuqing
 {
-	import com.apowo.tuqing.model.data.MapData;
+	import com.apowo.tuqing.model.data.LocalMapData;
 	
 	import flash.filesystem.File;
 

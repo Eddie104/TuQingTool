@@ -1,6 +1,14 @@
 package com.apowo.tuqing.model.data.project
 {
+	import com.apowo.tuqing.model.FurnitureManager;
+	import com.apowo.tuqing.model.MapDataManager;
+	import com.apowo.tuqing.model.data.FurnitureData;
+	import com.apowo.tuqing.model.data.MapData;
+	import com.apowo.tuqing.view.furniture.Furniture;
+	
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	
 	import mx.collections.ArrayCollection;
 
@@ -92,7 +100,57 @@ package com.apowo.tuqing.model.data.project
 		// 导出egret项目
 		public function exportEgret():Boolean{
 			
+			MapDataManager.instance.updateMapDataArr();
+			
+			var configDir:String = _egretPath + File.separator + "src" + File.separator + "com" + File.separator + "apowo" + File.separator + "sim" + File.separator + "config"; 
+			var f:File = new File(configDir);
+			f.createDirectory();
+			
+			f = new File(configDir + File.separator + "FurnitureConfig.ts");
+			var fs:FileStream = new FileStream();
+			fs.open(f, FileMode.WRITE);
+			fs.writeUTFBytes(createEgretFurnitureConfig());
+			fs.close();
+			
+			f = new File(configDir + File.separator + "MapConfig.ts");
+			fs = new FileStream();
+			fs.open(f, FileMode.WRITE);
+			fs.writeUTFBytes(createEgretMapConfig());
+			fs.close();
+			
 			return true;
+		}
+		
+		private function createEgretFurnitureConfig():String{
+			var manager:FurnitureManager = FurnitureManager.instance;
+			var f:FurnitureData;
+			var l:int = manager.furnitureDataList.length;
+			var s:String = "module sim.config {\n\n\texport const FURNITURE: Array<Object> = [\n";
+			for(var i:int = 0; i < l; i++){
+				f = manager.furnitureDataList[i];
+				s += '\t\t{Type: ' + f.type + ',　Name: "' + f.name + '", Description: "' + f.des + '", Asset: "' + f.asset + '", Subface: ' + f.getSubfaceArrStr() + ', OffsetX: ' + f.offsetX + ', OffsetY: ' + f.offsetY + '}';
+				if(i != l - 1){
+					s += ",\n";
+				}
+			}
+			s += "\n\t];\n}"
+			return s;
+		}
+		
+		private function createEgretMapConfig():String{
+			var manager:MapDataManager = MapDataManager.instance;
+			var m:MapData;
+			var l:int = manager.mapDataList.length;
+			var s:String = "module sim.config {\n\n\texport const MAP: Array<Object> = [\n";
+			for(var i:int = 0; i < l; i++){
+				m = manager.mapDataList[i];
+				s += '\t\t{Type: ' + m.type + ',　Name: "' + m.name + '", Description: "' + m.des + '", MapArr: ' + m.gfetMapDataArrStr() + '}';
+				if(i != l - 1){
+					s += ",\n";
+				}
+			}
+			s += "\n\t];\n}"
+			return s;
 		}
 	}
 }

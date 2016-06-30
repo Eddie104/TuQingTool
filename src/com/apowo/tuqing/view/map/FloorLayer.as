@@ -1,7 +1,7 @@
 package com.apowo.tuqing.view.map
 {
 	import com.apowo.tuqing.model.ProjectManager;
-	import com.apowo.tuqing.model.data.MapData;
+	import com.apowo.tuqing.model.data.LocalMapData;
 	
 	import flash.display.Shape;
 	import flash.display.Sprite;
@@ -22,7 +22,7 @@ package com.apowo.tuqing.view.map
 		
 		private var _floorList:Vector.<Vector.<FloorTile>> = new Vector.<Vector.<FloorTile>>();
 		
-		private var _mapData:MapData;
+		private var _mapData:LocalMapData;
 		
 		private var _tileContainer:Sprite;
 		
@@ -51,7 +51,7 @@ package com.apowo.tuqing.view.map
 			_startCol = value;
 		}
 		
-		public function reset(mapData:MapData):void{
+		public function reset(mapData:LocalMapData):void{
 			_mapData = mapData;
 			this._tileContainer.removeChildren();
 			this._floorList.length = 0;

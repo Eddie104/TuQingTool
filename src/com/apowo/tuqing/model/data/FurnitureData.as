@@ -137,7 +137,18 @@ package com.apowo.tuqing.model.data
 				tmpArr[r] = _subfaceArr[r].join("&");
 			}
 			_subface = tmpArr.join("|");
-			trace(_subface);
+		}
+		
+		public function getSubfaceArrStr():String{
+			var s:String = "[";
+			for(var i:int = 0; i < _subfaceArr.length; i++){
+				s += '[' + _subfaceArr[i].join(",") + ']';
+				if(i < _subfaceArr.length - 1){
+					s += ',';
+				}
+			}
+			s += ']';
+			return s;
 		}
 
 	}

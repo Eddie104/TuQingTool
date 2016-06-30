@@ -31,6 +31,7 @@ package com.apowo.tuqing.model
 		{
 			_curProjectData = value;
 			FurnitureManager.instance.reset();
+			MapDataManager.instance.reset();
 		}
 
 		private function readProjectDataFromLocal():void{
@@ -77,7 +78,6 @@ package com.apowo.tuqing.model
 			if(!f.exists){
 				var fs:FileStream = new FileStream();
 				fs.open(f, FileMode.WRITE);
-//				fs.writeUTF();
 				fs.writeMultiByte("Type,Name,Description,Asset,Subface,OffsetX,OffsetY\n0,0,2,2,0,2,2\n主键,名字,描述,资源,底面点,偏移值X,偏移值Y\nint,string,string,string,string,int,int", "GBK");
 				fs.close();	
 			}
@@ -93,6 +93,15 @@ package com.apowo.tuqing.model
 			f = new File(path + File.separator + "mapDatas");
 			if(!f.exists){
 				f.createDirectory();
+			}
+			
+			// 创建地图配置文件
+			f = new File(configDirPath + File.separator + "map.csv");
+			if(!f.exists){
+				fs = new FileStream();
+				fs.open(f, FileMode.WRITE);
+				fs.writeMultiByte("Type,Name,Description,MapData\n0,0,2,0\n主键,名字,描述,地图数据\nint,string,string,string", "GBK");
+				fs.close();	
 			}
 			
 			var p:ProjectData = new ProjectData(name, path, egretPath, cellWidth);

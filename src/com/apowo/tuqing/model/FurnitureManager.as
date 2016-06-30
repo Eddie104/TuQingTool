@@ -29,6 +29,11 @@ package com.apowo.tuqing.model
 			
 		}
 		
+		public function get furnitureDataList():Vector.<FurnitureData>
+		{
+			return _furnitureDataList;
+		}
+
 		public function reset():void{
 			var p:ProjectData = ProjectManager.instance.curProjectData;
 			if(p){
@@ -93,10 +98,7 @@ package com.apowo.tuqing.model
 			}
 		}
 		
-		public function saveMapData():void{
-//			for each(var f:FurnitureData in _furnitureDataList){
-//				
-//			}
+		public function saveFurnitureData():void{
 			var p:ProjectData = ProjectManager.instance.curProjectData;
 			if(p){
 				var configPath:String = p.path + File.separator + "config" + File.separator + "furniture.csv";

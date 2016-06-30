@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" creationComplete="onCreationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.apowo.tuqing.BitmapDataPool;
+			import com.apowo.tuqing.events.BmdEvent;
+			import com.apowo.tuqing.model.data.FurnitureData;
+			
+			import mx.events.FlexEvent;
+			
+			private var _furnitureData:FurnitureData;
+			
+			public function set furnitureData(value:FurnitureData):void
+			{
+				if(_furnitureData != value){
+					_furnitureData = value;
+					_img.source = BitmapDataPool.instance.getBmd(_furnitureData.getUrl());
+					_furnitureDataNameLabel.text = _furnitureData.name;
+					_furnitureDataDesLabel.text = _furnitureData.des;	
+				}
+			}
+			
+			protected function onCreationCompleteHandler(event:FlexEvent):void
+			{
+				 BitmapDataPool.instance.addEventListener(BmdEvent.LOAD_COMPLETED, onLoadBmdCompleted);
+			}
+			
+			private function onLoadBmdCompleted(evt:BmdEvent):void{
+				if(evt.url == _furnitureData.getUrl()){
+					_img.source = evt.bmd;
+				}
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:VGroup width="100%" height="200" horizontalAlign="center" verticalAlign="middle">
+		<s:Image id="_img"/>
+	</s:VGroup>
+	<s:HGroup width="100%" height="26" paddingLeft="6" verticalAlign="middle">
+		<s:Label text="家具名称" verticalAlign="middle"/>
+		<s:Label id="_furnitureDataNameLabel" width="100%" verticalAlign="middle"/>
+	</s:HGroup>
+	<s:HGroup width="100%" height="26" paddingLeft="6" verticalAlign="middle">
+		<s:Label text="家具描述" verticalAlign="middle"/>
+		<s:Label id="_furnitureDataDesLabel" width="100%" verticalAlign="middle"/>
+	</s:HGroup>
+</s:VGroup>

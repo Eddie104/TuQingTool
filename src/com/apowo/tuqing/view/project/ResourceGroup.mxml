@@ -11,7 +11,7 @@
 			import com.apowo.tuqing.events.ProjectTreeEvent;
 			import com.apowo.tuqing.model.MapDataManager;
 			import com.apowo.tuqing.model.ProjectManager;
-			import com.apowo.tuqing.model.data.MapData;
+			import com.apowo.tuqing.model.data.LocalMapData;
 			import com.apowo.tuqing.model.data.project.ProjectData;
 			
 			import mx.collections.ArrayCollection;

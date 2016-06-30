@@ -20,13 +20,15 @@
 			import com.apowo.tuqing.model.ProjectManager;
 			import com.apowo.tuqing.model.data.BaseData;
 			import com.apowo.tuqing.model.data.FurnitureData;
-			import com.apowo.tuqing.model.data.MapData;
+			import com.apowo.tuqing.model.data.LocalMapData;
 			import com.apowo.tuqing.model.data.project.FileNode;
 			import com.apowo.tuqing.model.data.project.ProjectData;
 			import com.apowo.tuqing.view.about.AboutWindown;
 			import com.apowo.tuqing.view.config.ConfigGroup;
 			import com.apowo.tuqing.view.furniture.FurnitureEditor;
+			import com.apowo.tuqing.view.furniture.FurniturePropertiesGroup;
 			import com.apowo.tuqing.view.map.MapGroup;
+			import com.apowo.tuqing.view.map.MapPropertiesGroup;
 			import com.apowo.tuqing.view.map.NewMapWindow;
 			import com.apowo.tuqing.view.project.ExportProjectWin;
 			import com.apowo.tuqing.view.project.NewProjectWindow;
@@ -49,6 +51,12 @@
 			private var _configGroup:ConfigGroup;
 			
 			private var _curGroup:Group;
+			
+			private var _mapPropertiesGroup:MapPropertiesGroup;
+			
+			private var _furniturePropertiesGroup:FurniturePropertiesGroup;
+			
+			private var _curPropertiesGroup:Group;
 			
 			protected function munuItemClickHandler(event:MenuEvent):void {
 				if(event.label == "家具编辑器") {
@@ -90,8 +98,11 @@
 				_mapGroup = new MapGroup();
 				_configGroup = new ConfigGroup();
 				
-				_curGroup = _mapGroup;
-				this._contentGroup.addElement(_curGroup);
+//				_curGroup = _mapGroup;
+//				this._contentGroup.addElement(_curGroup);
+				
+				_mapPropertiesGroup = new MapPropertiesGroup();
+				_furniturePropertiesGroup = new FurniturePropertiesGroup();
 				
 				_resourceGroup.addEventListener(MapEvent.MAP_EVENT, onMapEvent);
 				_resourceGroup.addEventListener(ProjectEvent.PROJECT_EVENT, onProjectEvent);
@@ -111,10 +122,10 @@
 //						mapChanged(evt.data as MapData);
 //						break;
 					case MapEvent.DELETE_FILE:
-						deleteMapFile(evt.data as MapData);
+						deleteMapFile(evt.data as LocalMapData);
 						break;
 					case MapEvent.EDIT_FILE:
-						editMapFile(evt.data as MapData);
+						editMapFile(evt.data as LocalMapData);
 						break;
 				}
 			}
@@ -138,12 +149,23 @@
 							var fileNode:FileNode = item as FileNode;
 							switch(fileNode.file.extension){
 								case "map":
+									var mapData:LocalMapData = null;
 									if(_curGroup != _mapGroup){
 										_contentGroup.removeAllElements();
 										_curGroup = _mapGroup;
 										_contentGroup.addElement(_curGroup);
 									}
-									_mapGroup.drawMap(MapDataManager.instance.setCurMapData(fileNode.name));									
+									mapData = MapDataManager.instance.setCurLocalMapData(fileNode.name);
+									_mapGroup.drawMap(mapData);
+									
+									if(_curPropertiesGroup != _mapPropertiesGroup){
+										if(_curPropertiesGroup){
+											_propertiesGroup.removeElement(_curPropertiesGroup);	
+										}
+										_curPropertiesGroup = _mapPropertiesGroup;
+										_propertiesGroup.addElement(_curPropertiesGroup);
+									}
+									_mapPropertiesGroup.mapData = mapData;
 									break;
 								case "csv":
 									if(_curGroup != _configGroup){
@@ -168,7 +190,14 @@
 						PopUpUtil.instance.addPopUp(win, this, true, 1);
 						break;
 					case FurnitureEvent.SELECT_FURNITURE:
-						_propertiesGroup.data = evt.data as BaseData;
+						if(_curPropertiesGroup != _furniturePropertiesGroup){
+							if(_curPropertiesGroup){
+								_propertiesGroup.removeElement(_curPropertiesGroup);	
+							}
+							_curPropertiesGroup = _furniturePropertiesGroup;
+							_propertiesGroup.addElement(_curPropertiesGroup);
+						}
+						_furniturePropertiesGroup.furnitureData = evt.data as FurnitureData;;
 						break;
 				}
 			}
@@ -221,19 +250,20 @@
 				
 			}
 			
-			private function deleteMapFile(mapData:MapData):void{
-				MapDataManager.instance.deleteMapData(mapData);
+			private function deleteMapFile(mapData:LocalMapData):void{
+				MapDataManager.instance.deleteLocalMapData(mapData);
 			}
 			
-			private function editMapFile(mapData:MapData):void{
+			private function editMapFile(mapData:LocalMapData):void{
 				
 			}
 			
 			protected function onClosingHandler(event:Event):void
 			{
 				MapDataManager.instance.saveMapDataToLocal();
+				MapDataManager.instance.saveMapData();
 				ProjectManager.instance.saveProjectDataToLocal();
-				FurnitureManager.instance.saveMapData();
+				FurnitureManager.instance.saveFurnitureData();
 			}
 			
 			protected function onActivateHandler(event:Event):void
@@ -286,8 +316,12 @@
 				<project:ResourceGroup id="_resourceGroup" width="100%" height="100%"/>
 			</s:Group>
 			<s:Group id="_contentGroup" width="65%" height="100%" />
-			<s:Group width="20%" height="100%">
-				<map:PropertiesGroup id="_propertiesGroup" width="100%" height="100%"/>
+			<s:Group id="_propertiesGroup" width="20%" height="100%">
+				<s:Rect width="100%" height="100%">
+					<s:stroke>
+						<s:SolidColorStroke color="0" weight="1"/>
+					</s:stroke>
+				</s:Rect>
 			</s:Group>
 		</mx:HDividedBox>
 	</s:VGroup>
